@@ -24,7 +24,8 @@ class _LoginPageState extends State<LoginScreen> {
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      _exampleButton(),
+
+                      exampleButton(),
                     ]))));
   }
 }
