@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import './splash screen.dart';
+import 'pages/splash screen.dart';
 
 //test imports
-import './zoek.dart';
-import './map.dart';
-import './contact.dart';
-import './home.dart';
+import 'pages/zoek.dart';
+import 'pages/map.dart';
+import 'pages/contact.dart';
+import 'pages/home.dart';
 
 class App extends StatelessWidget {
   const App({super.key});

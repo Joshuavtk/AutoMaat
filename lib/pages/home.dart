@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './map.dart';
-import './contact.dart';
+import 'map.dart';
+import 'contact.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});

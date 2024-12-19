@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './zoek.dart';
+import 'zoek.dart';
 
 class Map extends StatelessWidget {
   const Map({super.key});
