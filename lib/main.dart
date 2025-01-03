@@ -7,6 +7,7 @@ import 'pages/map.dart';
 import 'pages/contact.dart';
 import 'pages/home.dart';
 import 'pages/database_test.dart';
+import 'pages/http.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -14,7 +15,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-        home: DatabaseTest());
+        home: Map());
   }
 }
 

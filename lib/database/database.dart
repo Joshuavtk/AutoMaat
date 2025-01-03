@@ -1,23 +1,14 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import './table/user.dart';
 
 part 'database.g.dart';
 
-class TodoItems extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get title => text().withLength(min: 1, max: 32)();
-  TextColumn get content => text().named('body')();
-  IntColumn get category =>
-      integer().nullable().references(TodoCategory, #id)();
-  DateTimeColumn get createdAt => dateTime().nullable()();
-}
-
-class TodoCategory extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get description => text()();
-}
-
-@DriftDatabase(tables: [TodoItems, TodoCategory])
+@DriftDatabase(
+  tables: [
+    User
+    ]
+    )
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.
@@ -33,12 +24,12 @@ class AppDatabase extends _$AppDatabase {
     return driftDatabase(name: 'my_database');
   }
 
-  Future<List<TodoItem>> getItems() async {
-    return await select(todoItems).get();
+  Future<List<UserData>> getUsers() async {
+    return await select(user).get();
   }
 
   Future<int> saveItem(String item) async {
-    return await into(todoItems)
-        .insert(TodoItemsCompanion.insert(title: item, content: ' content'));
+    return await into(user)
+        .insert(UserCompanion.insert(token: item));
   }
 }

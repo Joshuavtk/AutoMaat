@@ -1,6 +1,6 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:flutter/material.dart';
-import '../database.dart';
+import '../database/database.dart';
 
 class DatabaseTest extends StatefulWidget {
   const DatabaseTest({super.key});
@@ -12,7 +12,7 @@ class DatabaseTest extends StatefulWidget {
 class _DatabaseTestState extends State<DatabaseTest> {
   final TextEditingController _textFieldController = TextEditingController();
   final database = AppDatabase();
-  List<TodoItem> items = [];
+  List<UserData> items = [];
 
   @override
   void initState() {
@@ -20,15 +20,21 @@ class _DatabaseTestState extends State<DatabaseTest> {
     _fetchData();
   }
 
+  @override
+  void dispose() {
+    database.close();
+    super.dispose();
+  }
+
   void _fetchData() async {
-    final databaseItems = await database.getItems();
+    final databaseItems = await database.getUsers();
     setState(() => items = databaseItems);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dingen om te doen')),
+      appBar: AppBar(title: const Text('User tokens')),
       body: _getItems(),
       floatingActionButton: FloatingActionButton(
           onPressed: () => _displayDialog(context),
@@ -44,7 +50,7 @@ class _DatabaseTestState extends State<DatabaseTest> {
         itemBuilder: (context, index) {
           final item = items[index];
           return ListTile(
-            title: Text(item.title),
+            title: Text(item.token),
           );
         });
   }
@@ -64,7 +70,7 @@ class _DatabaseTestState extends State<DatabaseTest> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: const Text('Voeg een ding aan de lijst toe'),
+            title: const Text('Voeg token toe'),
             content: TextField(
               controller: _textFieldController,
               decoration: const InputDecoration(hintText: 'Tekst hier'),
