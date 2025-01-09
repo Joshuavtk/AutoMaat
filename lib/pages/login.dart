@@ -29,34 +29,41 @@ class _LoginPageState extends State<LoginScreen> {
     return MaterialApp(
         home: Scaffold(
             body: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Image(image: AssetImage('images/splash_screen.png'), height: 50,),
-                      const Text("Log in"),
-                      const Text("Log in with your AutoMaat account"),
-                      TextField(
-                        controller: _emailFieldController,
-                        decoration: const InputDecoration(hintText: 'Email'),
-                      ),
-                      TextField(
-                        controller: _passwordFieldController,
-                        decoration: const InputDecoration(hintText: 'Password'),
-                      ),
-                      Checkbox(value: checkboxValue, onChanged: (e) => checkboxValue = true, ),
-                      const Text("Show password"),
-                      TextButton(onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordScreen())),
-                          child: const Text('Forgot password?')),
-                      TextButton(
-                          onPressed: () => Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => const RegisterScreen())),
-                          child: const Text('Create account')),
-                      ElevatedButton(
-                          onPressed: () => print(authenticate('test', 'test', true)),
-                          child: const Text('Login')),
+                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+      const Image(
+        image: AssetImage('images/splash_screen.png'),
+        height: 50,
+      ),
+      const Text("Log in"),
+      const Text("Log in with your AutoMaat account"),
+      TextField(
+        controller: _emailFieldController,
+        decoration: const InputDecoration(hintText: 'Email'),
+      ),
+      TextField(
+        controller: _passwordFieldController,
+        decoration: const InputDecoration(hintText: 'Password'),
+      ),
+      CheckboxListTile(
+          title: const Text("Remember me?"),
+          value: checkboxValue,
+          onChanged: (newValue) => setState(() {
+                checkboxValue = newValue!;
+              }),
+          controlAffinity: ListTileControlAffinity.leading),
+      const Text("Show password"),
+      TextButton(
+          onPressed: () =>
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordScreen())),
+          child: const Text('Forgot password?')),
+      TextButton(
+          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterScreen())),
+          child: const Text('Create account')),
+      ElevatedButton(
+          onPressed: () => authenticate(_emailFieldController.text, _passwordFieldController.text, checkboxValue),
+          child: const Text('Login')),
 
-          // exampleButton([checkboxValue, _passwordFieldController.text]),
-        ]))));
+      // exampleButton([checkboxValue, _passwordFieldController.text]),
+    ]))));
   }
 }
