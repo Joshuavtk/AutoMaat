@@ -1,22 +1,17 @@
+import 'package:auto_maat/pages/login.dart';
 import 'package:flutter/material.dart';
-import 'pages/splash_screen.dart';
-
-//test imports
-import 'pages/zoek.dart';
-import 'pages/map.dart';
-import 'pages/contact.dart';
-import 'pages/home.dart';
-import 'pages/database_test.dart';
-import 'pages/http.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-        home: Map());
+    return const MaterialApp(home: LoginScreen());
   }
 }
 
-void main() => runApp(const App());
+Future main() async {
+  await dotenv.load(fileName: ".env");
+  runApp(const App());
+}

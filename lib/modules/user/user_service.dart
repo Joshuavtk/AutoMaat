@@ -14,7 +14,8 @@ Future<String> authenticate(username, password, rememberMe) async {
   });
 
   final response = await http.post(
-      Uri.parse('http://localhost:8080/api/authenticate'),
+
+      Uri.http(apiUrl, 'api/authenticate'),
       headers: {"Content-Type": "application/json"},
       body: payload,
   );
@@ -26,7 +27,7 @@ Future<String> authenticate(username, password, rememberMe) async {
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Handle successful upload
       print('Login geslaagd...: ${response.statusCode}');
-      print(jsonDecode(response.body)['id_token']);
+      String bearerToken = jsonDecode(response.body)['id_token'];
     } else {
       // Handle failed upload
       print('Login niet geslaagd. Status code: ${response.statusCode}');
