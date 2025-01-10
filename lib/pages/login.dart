@@ -1,16 +1,7 @@
-import 'dart:ffi';
-
 import 'package:auto_maat/modules/user/user_service.dart';
 import 'package:auto_maat/pages/forgot_password.dart';
 import 'package:auto_maat/pages/register.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-
-import 'package:auto_maat/ui/button.dart';
-
-import 'dart:async';
-import 'dart:convert';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -23,40 +14,97 @@ class _LoginPageState extends State<LoginScreen> {
   final TextEditingController _emailFieldController = TextEditingController();
   final TextEditingController _passwordFieldController = TextEditingController();
   bool checkboxValue = false;
+  bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
         home: Scaffold(
             body: Center(
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      const Image(image: AssetImage('images/splash_screen.png'), height: 50,),
-                      const Text("Log in"),
-                      const Text("Log in with your AutoMaat account"),
-                      TextField(
-                        controller: _emailFieldController,
-                        decoration: const InputDecoration(hintText: 'Email'),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: Theme.of(context).colorScheme.tertiaryContainer,
+        ),
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Image(
+                image: AssetImage('images/splash_screen.png'),
+                height: 50,
+              ),
+              const SizedBox(height: 20.0),
+              const Text(
+                "Log in",
+                style: TextStyle(fontSize: 32),
+                textAlign: TextAlign.end,
+              ),
+              const Text("Log in with your AutoMaat account"),
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: _emailFieldController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 20.0),
+              TextField(
+                controller: _passwordFieldController,
+                decoration: InputDecoration(
+                    labelText: 'Enter your password',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        color: Theme.of(context).primaryColorDark,
                       ),
-                      TextField(
-                        controller: _passwordFieldController,
-                        decoration: const InputDecoration(hintText: 'Password'),
-                      ),
-                      Checkbox(value: checkboxValue, onChanged: (e) => checkboxValue = true, ),
-                      const Text("Show password"),
-                      TextButton(onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const ForgotPasswordScreen())),
-                          child: const Text('Forgot password?')),
-                      TextButton(
-                          onPressed: () => Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => const RegisterScreen())),
-                          child: const Text('Create account')),
-                      ElevatedButton(
-                          onPressed: () => print(authenticate('test', 'test', true)),
-                          child: const Text('Login')),
-
-          // exampleButton([checkboxValue, _passwordFieldController.text]),
-        ]))));
+                    )),
+                obscureText: _obscurePassword,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: CheckboxListTile(
+                        dense: true,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                        title: const Text(
+                          "Remember me?",
+                          style: TextStyle(fontSize: 15),
+                        ),
+                        value: checkboxValue,
+                        onChanged: (newValue) => setState(() {
+                              checkboxValue = newValue!;
+                            }),
+                        controlAffinity: ListTileControlAffinity.leading),
+                  ),
+                  TextButton(
+                      onPressed: () => Navigator.push(
+                          context, MaterialPageRoute(builder: (context) => const ForgotPasswordScreen())),
+                      child: const Text('Forgot password?')),
+                ],
+              ),
+              Row(
+                children: [
+                  TextButton(
+                      onPressed: () =>
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterScreen())),
+                      child: const Text('Create account')),
+                  const Spacer(),
+                  ElevatedButton(
+                      onPressed: () =>
+                          authenticate(_emailFieldController.text, _passwordFieldController.text, checkboxValue),
+                      child: const Text('Login')),
+                ],
+              ),
+            ]),
+      ),
+    )));
   }
 }
