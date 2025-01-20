@@ -1,3 +1,4 @@
+import 'package:auto_maat/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'home.dart';
 
@@ -14,7 +15,7 @@ class SplashScreen extends StatelessWidget {
           const Image(image: AssetImage('images/splash_screen.png')),
           ElevatedButton(
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Home())),
+                  MaterialPageRoute(builder: (context) => const LoginScreen())),
               child: const Text('Doorgaan')),
         ])));
     }
