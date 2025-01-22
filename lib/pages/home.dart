@@ -1,3 +1,4 @@
+import 'package:auto_maat/pages/account.dart';
 import 'package:flutter/material.dart';
 import 'map.dart';
 import 'contact.dart';
@@ -25,6 +26,10 @@ class Home extends StatelessWidget {
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const Map())),
               child: const Text('Naar map')),
+          ElevatedButton(
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AccountScreen())),
+              child: const Text('Naar account')),
         ])));
   }
 }

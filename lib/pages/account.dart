@@ -53,8 +53,15 @@ class _AccountPageState extends State<AccountScreen> {
       fullWidthButton(context, 'Timeline', Icons.history, const TimelineScreen()),
       fullWidthButton(context, 'Edit account', Icons.manage_accounts, const AccountEditScreen()),
       fullWidthButton(context, 'Logout from account', Icons.logout, const AccountEditScreen()),
+      ElevatedButton(onPressed: logout(), child: const Text("Logout")),
+
       fullWidthButton(context, 'Support', Icons.help_outline, const TimelineScreen()),
       fullWidthButton(context, 'App info', Icons.info_outline, const TimelineScreen()),
     ]);
+
+  }
+
+  logout() {
+
   }
 }

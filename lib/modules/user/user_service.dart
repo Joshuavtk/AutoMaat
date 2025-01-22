@@ -33,6 +33,8 @@ Future<bool> authenticate(username, password, rememberMe) async {
       // print(users);
       database.saveItem(bearerToken);
 
+      database.close();
+
       // Redirect to Home screen
       // Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()))
 

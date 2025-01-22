@@ -1,5 +1,6 @@
 import 'package:auto_maat/modules/user/user_service.dart';
 import 'package:auto_maat/pages/forgot_password.dart';
+import 'package:auto_maat/pages/home.dart';
 import 'package:auto_maat/pages/register.dart';
 import 'package:auto_maat/ui/login_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -85,10 +86,18 @@ class _LoginPageState extends State<LoginScreen> {
               child: const Text('Create account')),
           const Spacer(),
           ElevatedButton(
-              onPressed: () => {authenticate(_emailFieldController.text, _passwordFieldController.text, checkboxValue)},
+              onPressed: () => loginPressed(),
               child: const Text('Login')),
         ],
       ),
     ]);
+  }
+
+  loginPressed() async {
+    var success = await authenticate(_emailFieldController.text, _passwordFieldController.text, checkboxValue);
+
+    if (mounted && success) {
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Home()), (route) => false);
+    }
   }
 }
