@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
+import 'package:auto_maat/database/database.dart';
 import 'package:auto_maat/modules/api/api_service.dart';
+import 'package:http/http.dart' as http;
 
-Future<String> authenticate(username, password, rememberMe) async {
-
+Future<bool> authenticate(username, password, rememberMe) async {
   print("start login $username + $password + $rememberMe");
 
   final payload = jsonEncode(<String, Object>{
@@ -14,10 +14,9 @@ Future<String> authenticate(username, password, rememberMe) async {
   });
 
   final response = await http.post(
-
-      Uri.http(apiUrl, 'api/authenticate'),
-      headers: {"Content-Type": "application/json"},
-      body: payload,
+    Uri.http(apiUrl, 'api/authenticate'),
+    headers: {"Content-Type": "application/json"},
+    body: payload,
   );
 
   print(response);
@@ -28,6 +27,16 @@ Future<String> authenticate(username, password, rememberMe) async {
       // Handle successful upload
       print('Login geslaagd...: ${response.statusCode}');
       String bearerToken = jsonDecode(response.body)['id_token'];
+
+      AppDatabase database = AppDatabase();
+      // var users = await database.getUsers();
+      // print(users);
+      database.saveItem(bearerToken);
+
+      // Redirect to Home screen
+      // Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()))
+
+      return true;
     } else {
       // Handle failed upload
       print('Login niet geslaagd. Status code: ${response.statusCode}');
@@ -37,5 +46,5 @@ Future<String> authenticate(username, password, rememberMe) async {
     print('Error: $error');
   }
 
-  return "Token...";
+  return false;
 }
