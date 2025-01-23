@@ -1,8 +1,10 @@
 import 'package:auto_maat/pages/account_edit.dart';
+import 'package:auto_maat/pages/login.dart';
 import 'package:auto_maat/pages/timeline.dart';
 import 'package:auto_maat/ui/account_wrapper.dart';
 import 'package:flutter/material.dart';
 
+import '../database/database.dart';
 import '../ui/full_width_button.dart';
 
 class AccountScreen extends StatefulWidget {
@@ -52,16 +54,32 @@ class _AccountPageState extends State<AccountScreen> {
       ),
       fullWidthButton(context, 'Timeline', Icons.history, const TimelineScreen()),
       fullWidthButton(context, 'Edit account', Icons.manage_accounts, const AccountEditScreen()),
-      fullWidthButton(context, 'Logout from account', Icons.logout, const AccountEditScreen()),
-      ElevatedButton(onPressed: logout(), child: const Text("Logout")),
-
+      MaterialButton(
+          height: 50,
+          minWidth: 1000,
+          onPressed: () => logout(),
+          child: const Row(
+            children: [
+              Icon(Icons.logout, size: 30),
+              Padding(padding: EdgeInsets.all(15)),
+              Text(
+                "Logout from account",
+                style: TextStyle(fontSize: 16),
+              )
+            ],
+          )),
       fullWidthButton(context, 'Support', Icons.help_outline, const TimelineScreen()),
       fullWidthButton(context, 'App info', Icons.info_outline, const TimelineScreen()),
     ]);
-
   }
 
-  logout() {
+  logout() async {
+    AppDatabase database = AppDatabase();
+    await database.deleteUserToken();
+    database.close();
 
+    if (mounted) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+    }
   }
 }

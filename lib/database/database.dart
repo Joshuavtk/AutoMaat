@@ -32,4 +32,8 @@ class AppDatabase extends _$AppDatabase {
     return await into(user)
         .insert(UserCompanion.insert(token: item));
   }
+
+  Future<int> deleteUserToken() async {
+    return await delete(user).go();
+  }
 }

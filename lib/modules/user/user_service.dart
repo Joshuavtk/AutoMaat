@@ -31,7 +31,7 @@ Future<bool> authenticate(username, password, rememberMe) async {
       AppDatabase database = AppDatabase();
       // var users = await database.getUsers();
       // print(users);
-      database.saveItem(bearerToken);
+      await database.saveItem(bearerToken);
 
       database.close();
 
