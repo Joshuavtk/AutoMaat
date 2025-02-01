@@ -11,7 +11,7 @@ Widget accountWrapper(BuildContext context, String title, {required List<Widget>
         title: Text(title),
         centerTitle: true,
       ),
-      body: Column(
+      body: ListView(
         children: children,
       ));
 }

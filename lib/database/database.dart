@@ -1,3 +1,4 @@
+import 'package:auto_maat/database/table/rental.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import './table/user.dart';
@@ -6,7 +7,8 @@ part 'database.g.dart';
 
 @DriftDatabase(
   tables: [
-    User
+    User,
+    Rentals
     ]
     )
 class AppDatabase extends _$AppDatabase {

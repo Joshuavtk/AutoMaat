@@ -17,6 +17,8 @@ class _LoginPageState extends State<LoginScreen> {
   final TextEditingController _passwordFieldController = TextEditingController();
   bool checkboxValue = false;
   bool _obscurePassword = true;
+  String statusMessage = '';
+  bool loading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +58,10 @@ class _LoginPageState extends State<LoginScreen> {
             )),
         obscureText: _obscurePassword,
       ),
+      Text(
+        statusMessage,
+        style: const TextStyle(color: Colors.red),
+      ),
       Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -85,19 +91,41 @@ class _LoginPageState extends State<LoginScreen> {
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const RegisterScreen())),
               child: const Text('Create account')),
           const Spacer(),
-          ElevatedButton(
-              onPressed: () => loginPressed(),
-              child: const Text('Login')),
+          ElevatedButton(onPressed: () => loginPressed(), child: const Text('Login')),
         ],
       ),
     ]);
   }
 
   loginPressed() async {
+    if (loading) {
+      return null;
+    }
+
+    setState(() {
+      loading = true;
+      statusMessage = "";
+    });
+
+    if (_emailFieldController.text == '' || _passwordFieldController.text == '') {
+      setState(() {
+        statusMessage = 'Error logging in, fields may not be empty';
+        loading = false;
+      });
+      return false;
+    }
+
     var success = await authenticate(_emailFieldController.text, _passwordFieldController.text, checkboxValue);
 
+    setState(() {
+      loading = false;
+    });
     if (mounted && success) {
       Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const Home()), (route) => false);
+    } else {
+      setState(() {
+        statusMessage = 'Error logging in, incorrect login data.';
+      });
     }
   }
 }

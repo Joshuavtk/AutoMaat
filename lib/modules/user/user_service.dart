@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:auto_maat/database/database.dart';
 import 'package:auto_maat/modules/api/api_service.dart';
+import 'package:drift/drift.dart';
 import 'package:http/http.dart' as http;
 
 Future<bool> authenticate(username, password, rememberMe) async {
@@ -13,16 +14,16 @@ Future<bool> authenticate(username, password, rememberMe) async {
     "rememberMe": rememberMe,
   });
 
-  final response = await http.post(
-    Uri.http(apiUrl, 'api/authenticate'),
-    headers: {"Content-Type": "application/json"},
-    body: payload,
-  );
-
-  print(response);
-  print(response.body);
-
   try {
+    final response = await http.post(
+      Uri.http(apiUrl, 'api/authenticate'),
+      headers: {"Content-Type": "application/json"},
+      body: payload,
+    );
+
+    // print(response);
+    // print(response.body);
+
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Handle successful upload
       print('Login geslaagd...: ${response.statusCode}');
@@ -35,13 +36,121 @@ Future<bool> authenticate(username, password, rememberMe) async {
 
       database.close();
 
-      // Redirect to Home screen
-      // Navigator.push(context, MaterialPageRoute(builder: (context) => const Home()))
+      return true;
+    } else {
+      // Handle failed upload
+      //TODO: show failed login attempt error
+      print('Login niet geslaagd. Status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    // Probably means that network is offline or server cannot be reached.
+    print('Error: $error');
+  }
+
+  return false;
+}
+
+Future<bool> register(email, firstName, lastName, username, password) async {
+  print("start register $username + $password + $email");
+
+  final payload = jsonEncode(<String, Object>{
+    "email": email,
+    "firstName": firstName,
+    "lastName": lastName,
+    "login": username,
+    "password": password,
+  });
+
+  try {
+    final response = await http.post(
+      Uri.http(apiUrl, 'api/register'),
+      headers: {"Content-Type": "application/json"},
+      body: payload,
+    );
+
+    print(response);
+    print(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      print('Register geslaagd...: ${response.statusCode}');
 
       return true;
     } else {
       // Handle failed upload
+      //TODO: show failed login attempt error
       print('Login niet geslaagd. Status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    // Probably means that network is offline or server cannot be reached.
+    print('Error: $error');
+  }
+
+  return false;
+}
+
+Future<List<RentalsCompanion>> timelineData() async {
+  String token = await getUserToken();
+
+  var url = Uri.http(apiUrl, 'api/rentals');
+
+  var response = await http.get(
+    url,
+    headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
+  );
+  if (response.statusCode == 200) {
+    List<RentalsCompanion> rentals = [];
+    for (var item in jsonDecode(response.body)) {
+      final rental = RentalsCompanion(
+        id: Value(item['id']),
+        state: Value(item['state']),
+        fromDate: Value(DateTime.parse(item['fromDate'])),
+        toDate: Value(DateTime.parse(item['toDate'])),
+        longitude: Value(item['longitude']),
+        latitude: Value(item['latitude']),
+        code: Value(item['code']),
+      );
+
+      rentals.add(rental);
+    }
+    return rentals;
+  }
+  //Should only happen on no network connection.
+  print('Error retrieving timeline data');
+  return [];
+}
+
+Future<String> getUserToken() async {
+  AppDatabase database = AppDatabase();
+  var users = await database.getUsers();
+  database.close();
+
+  UserData userData = users.first;
+  String token = userData.token;
+
+  return token;
+}
+
+Future<bool> changePassword(currentPassword, newPassword) async {
+  String token = await getUserToken();
+
+  final payload = jsonEncode(<String, Object>{
+    "currentPassword": currentPassword,
+    "newPassword": newPassword,
+  });
+
+  final response = await http.post(
+    Uri.http(apiUrl, 'api/account/change-password'),
+    headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
+    body: payload,
+  );
+
+  try {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      return true;
     }
   } catch (error) {
     // Handle any errors that occurred during the HTTP request
