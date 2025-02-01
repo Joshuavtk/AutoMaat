@@ -1,3 +1,4 @@
+import 'package:auto_maat/database/table/rental.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import './table/user.dart';
@@ -6,7 +7,8 @@ part 'database.g.dart';
 
 @DriftDatabase(
   tables: [
-    User
+    User,
+    Rentals
     ]
     )
 class AppDatabase extends _$AppDatabase {
@@ -31,5 +33,9 @@ class AppDatabase extends _$AppDatabase {
   Future<int> saveItem(String item) async {
     return await into(user)
         .insert(UserCompanion.insert(token: item));
+  }
+
+  Future<int> deleteUserToken() async {
+    return await delete(user).go();
   }
 }

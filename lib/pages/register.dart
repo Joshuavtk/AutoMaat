@@ -1,5 +1,8 @@
 import 'package:auto_maat/pages/home.dart';
+import 'package:auto_maat/pages/register_finish.dart';
 import 'package:flutter/material.dart';
+
+import '../ui/login_wrapper.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -9,82 +12,87 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterScreen> {
-  final TextEditingController _nameFieldController = TextEditingController();
   final TextEditingController _emailFieldController = TextEditingController();
   final TextEditingController _passwordFieldController = TextEditingController();
   final TextEditingController _passwordRepeatFieldController = TextEditingController();
+  String statusMessage = '';
+  // bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            body: Center(
-                child: Container(
-      padding: const EdgeInsets.all(15),
-      margin: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Theme.of(context).colorScheme.tertiaryContainer,
+    return loginWrapper(context, children: <Widget>[
+      const Image(
+        image: AssetImage('images/splash_screen.png'),
+        height: 50,
       ),
-      child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            const Image(
-              image: AssetImage('images/splash_screen.png'),
-              height: 50,
-            ),
-            const SizedBox(height: 20.0),
-            const Text(
-              "Create AutoMaat-account",
-              style: TextStyle(fontSize: 24),
-              textAlign: TextAlign.end,
-            ),
-            const Text("Register your account"),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _nameFieldController,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _emailFieldController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _passwordFieldController,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            TextField(
-              controller: _passwordRepeatFieldController,
-              decoration: const InputDecoration(
-                labelText: 'Repeat password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 10.0),
-            Row(
-              children: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Back to login')),
-                const Spacer(),
-                ElevatedButton(
-                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const Home())),
-                    child: const Text('Create account')),
-              ],
-            ),
-          ]),
-    ))));
+      const SizedBox(height: 20.0),
+      const Text(
+        "Create AutoMaat-account",
+        style: TextStyle(fontSize: 24),
+        textAlign: TextAlign.end,
+      ),
+      const Text("Register your account"),
+      const SizedBox(height: 20.0),
+      TextField(
+        controller: _emailFieldController,
+        decoration: const InputDecoration(
+          labelText: 'Email',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      const SizedBox(height: 20.0),
+      TextField(
+        controller: _passwordFieldController,
+        obscureText: true,
+        decoration: const InputDecoration(
+          labelText: 'Password',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      const SizedBox(height: 20.0),
+      TextField(
+        controller: _passwordRepeatFieldController,
+        obscureText: true,
+        decoration: const InputDecoration(
+          labelText: 'Repeat password',
+          border: OutlineInputBorder(),
+        ),
+      ),
+      const SizedBox(height: 10.0),
+      Text(statusMessage, style: const TextStyle(color: Colors.red),),
+      Row(
+        children: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Back to login')),
+          const Spacer(),
+          ElevatedButton(
+              onPressed: () => goNextRegisterStep(),
+              child: const Text('Create account')),
+        ],
+      ),
+    ]);
+  }
+
+  goNextRegisterStep() {
+    setState(() {
+      statusMessage = "";
+    });
+
+    if (_emailFieldController.text == '' || _passwordFieldController.text == '') {
+      setState(() {
+        statusMessage = 'Error logging in, fields may not be empty';
+      });
+      return null;
+    }
+
+    if (_passwordFieldController.text != _passwordRepeatFieldController.text) {
+      statusMessage = 'Error registering, passwords do not match.';
+      print('passwords dont match');
+      return null;
+    }
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterFinishScreen(
+      email: _emailFieldController.text,
+      password: _passwordFieldController.text,
+    )));
   }
 }
