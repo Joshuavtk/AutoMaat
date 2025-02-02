@@ -51,6 +51,42 @@ Future<bool> authenticate(username, password, rememberMe) async {
   return false;
 }
 
+Future<bool> forgotPassword(email) async {
+  print("start forgot password $email");
+
+  // final payload = jsonEncode(<String, Object>{
+  //   email
+  // });
+
+  try {
+    final response = await http.post(
+      Uri.http(apiUrl, 'api/account/reset-password/init'),
+      headers: {"Content-Type": "application/json"},
+      body: email,
+    );
+
+    // print(response);
+    // print(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      print('Password reset success...: ${response.statusCode}');
+
+      return true;
+    } else {
+      // Handle failed upload
+      //TODO: show failed login attempt error
+      print('Error : ${response.statusCode}');
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    // Probably means that network is offline or server cannot be reached.
+    print('Error: $error');
+  }
+
+  return false;
+}
+
 Future<bool> register(email, firstName, lastName, username, password) async {
   print("start register $username + $password + $email");
 

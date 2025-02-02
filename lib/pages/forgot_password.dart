@@ -1,6 +1,7 @@
 import 'package:auto_maat/pages/login.dart';
 import 'package:flutter/material.dart';
 
+import '../modules/user/user_service.dart';
 import '../ui/login_wrapper.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordScreen> {
   final TextEditingController _emailFieldController = TextEditingController();
+  String statusMessage = '';
 
   @override
   Widget build(BuildContext context) {
@@ -36,15 +38,27 @@ class _ForgotPasswordPageState extends State<ForgotPasswordScreen> {
         ),
       ),
       const SizedBox(height: 10.0),
+      Text(statusMessage),
       Row(
         children: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Back to login')),
           const Spacer(),
           ElevatedButton(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen())),
+              onPressed: () => submitPasswordRecoveryMail(),
               child: const Text('Send code')),
         ],
       ),
     ]);
+  }
+
+  submitPasswordRecoveryMail() async {
+
+    bool success = await forgotPassword(_emailFieldController.text);
+
+    if (success && mounted) {
+      setState(() {
+        statusMessage = 'Password recovery has been sent! Please follow the instructions in the mail.';
+      });
+    }
   }
 }

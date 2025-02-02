@@ -1,4 +1,5 @@
 import 'package:auto_maat/pages/account_edit.dart';
+import 'package:auto_maat/pages/damage_report.dart';
 import 'package:auto_maat/pages/login.dart';
 import 'package:auto_maat/pages/timeline.dart';
 import 'package:auto_maat/ui/account_wrapper.dart';
@@ -53,7 +54,7 @@ class _AccountPageState extends State<AccountScreen> {
         height: 20,
       ),
       fullWidthButton(context, 'Timeline', Icons.history, const TimelineScreen()),
-      fullWidthButton(context, 'Edit account', Icons.manage_accounts, const AccountEditScreen()),
+      fullWidthButton(context, 'Edit account', Icons.manage_accounts_outlined, const AccountEditScreen()),
       MaterialButton(
           height: 50,
           minWidth: 1000,
@@ -68,6 +69,7 @@ class _AccountPageState extends State<AccountScreen> {
               )
             ],
           )),
+      fullWidthButton(context, 'Report damage to car', Icons.car_crash_outlined, const DamageReportScreen()),
       fullWidthButton(context, 'Support', Icons.help_outline, const TimelineScreen()),
       fullWidthButton(context, 'App info', Icons.info_outline, const TimelineScreen()),
     ]);

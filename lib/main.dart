@@ -31,6 +31,8 @@ Future main() async {
   var users = await database.getUsers();
   database.close();
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   print(users.isNotEmpty);
   if (users.isNotEmpty) {
     UserData userData = users.first;
