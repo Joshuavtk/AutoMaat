@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auto_maat/pages/reserve.dart';
 import 'package:auto_maat/pages/zoek.dart';
+import 'package:auto_maat/pages/rentals.dart';
 
 import 'database/database.dart';
 

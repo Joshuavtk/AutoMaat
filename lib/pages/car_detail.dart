@@ -1,10 +1,7 @@
 import 'package:auto_maat/modules/dataobject/car.dart';
 import 'package:auto_maat/pages/reserve.dart';
 import 'package:flutter/material.dart';
-import '../modules/http.dart' as custom_http;
 import 'dart:convert';
-import 'dart:typed_data';
-import 'package:flutter/widgets.dart';
 
 class CarDetail extends StatelessWidget {
   const CarDetail({super.key, required this.car});
@@ -19,6 +16,7 @@ class CarDetail extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Car detail page"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Column(
         children: [
@@ -27,7 +25,7 @@ class CarDetail extends StatelessWidget {
           Image.memory(base64Decode(car.picture)),
           ElevatedButton(
               onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const Reserve(restorationId: 'main'))),
+                  MaterialPageRoute(builder: (context) => Reserve(car: car, restorationId: 'main'))),
               child: const Text('Reserve car')),
         ],
       ),

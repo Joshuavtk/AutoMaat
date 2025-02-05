@@ -1,36 +1,36 @@
-import 'package:auto_maat/modules/dataobject/car.dart';
+import 'package:auto_maat/modules/dataobject/rental.dart';
 import 'package:auto_maat/pages/car_detail.dart';
 import 'package:flutter/material.dart';
 import '../modules/http.dart' as custom_http;
 
-class Zoek extends StatefulWidget {
-  const Zoek({super.key});
+class Rentals extends StatefulWidget {
+  const Rentals({super.key});
 
   @override
-  State<Zoek> createState() => ZoekWidget();
+  State<Rentals> createState() => RentalsWidget();
 }
 
-class ZoekWidget extends State<Zoek> {
-  List<Car> cars = [];
+class RentalsWidget extends State<Rentals> {
+  List<Rental> rentals = [];
 
   @override
   void initState() {
     super.initState();
-    _getCars();
+    _getRentals();
   }
   
   @override
     Widget build(BuildContext context) {
       return Scaffold(
             appBar: AppBar(
-              title: const Text('Zoek'),
+              title: const Text('Rentals'),
               backgroundColor: Theme.of(context).colorScheme.inversePrimary,
             ),
             body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    getCarWidgets(),
+                    getRentalWidgets(),
                     ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text('terug')),
@@ -40,27 +40,23 @@ class ZoekWidget extends State<Zoek> {
           );
     }
 
-    Widget getCarWidgets() {
+    Widget getRentalWidgets() {
       return Expanded(child: ListView(
         padding: const EdgeInsets.all(8),
         children: <Widget>[
-          for (Car car in cars) ...[
+          for (Rental rental in rentals) ...[
           ListTile(
-            title: Text("${car.model} ${car.brand}"),
-            onTap: (){ Navigator.push(context, MaterialPageRoute(
-            builder: (context) => CarDetail(car: car),
-            ));},
-            
+            title: Text("${rental.id} ${rental.code} ${rental.state}"),            
           ),
         ]          
         ],
       ));
     }
 
-  _getCars() async {
-    var temp = await custom_http.getCars();
+  _getRentals() async {
+    var temp = await custom_http.getRentals(2);
     setState(() {
-      cars = temp;
+      rentals = temp;
     });
   }
 }
