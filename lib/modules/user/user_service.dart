@@ -136,6 +136,8 @@ Future<List<RentalsCompanion>> timelineData() async {
     url,
     headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
   );
+
+  print(response.statusCode);
   if (response.statusCode == 200) {
     List<RentalsCompanion> rentals = [];
     for (var item in jsonDecode(response.body)) {
@@ -152,6 +154,8 @@ Future<List<RentalsCompanion>> timelineData() async {
       rentals.add(rental);
     }
     return rentals;
+  } else if (response.statusCode == 401) {
+    // Authorization token invalid.
   }
   //Should only happen on no network connection.
   print('Error retrieving timeline data');
@@ -186,6 +190,69 @@ Future<bool> changePassword(currentPassword, newPassword) async {
   try {
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Handle successful upload
+      return true;
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    print('Error: $error');
+  }
+
+  return false;
+}
+
+Future<int> uploadDamageReport(RentalsCompanion rental, String description) async {
+  String token = await getUserToken();
+
+  final payload = jsonEncode(<String, Object>{
+    "code": rental.code.value,
+    "description": description,
+  });
+
+  final response = await http.post(
+    Uri.http(apiUrl, 'api/inspections'),
+    headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
+    body: payload,
+  );
+
+  print(response.body);
+  print(response.statusCode);
+
+  try {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      int reportId = jsonDecode(response.body)['id'];
+      return reportId;
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    print('Error: $error');
+  }
+
+  return 0;
+}
+
+Future<bool> uploadImageToDamageReport(int reportId, String image) async {
+  print('start upload picture');
+  String token = await getUserToken();
+
+  final payload = jsonEncode(<String, Object>{
+    // "id": reportId,
+    "photo": image, "photoContentType": "image/png"
+  });
+
+  final response = await http.post(
+    Uri.http(apiUrl, 'api/inspection-photos'),
+    headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
+    body: payload,
+  );
+
+  print(response.body);
+  print(response.statusCode);
+
+  try {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      // int reportId = jsonDecode(response.body)['id'];
       return true;
     }
   } catch (error) {
