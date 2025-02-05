@@ -53,7 +53,7 @@ class _AccountPageState extends State<AccountScreen> {
         height: 20,
       ),
       fullWidthButton(context, 'Timeline', Icons.history, const TimelineScreen()),
-      fullWidthButton(context, 'Edit account', Icons.manage_accounts, const AccountEditScreen()),
+      fullWidthButton(context, 'Edit account', Icons.manage_accounts_outlined, const AccountEditScreen()),
       MaterialButton(
           height: 50,
           minWidth: 1000,
