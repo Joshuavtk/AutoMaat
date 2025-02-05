@@ -9,8 +9,8 @@ part 'database.g.dart';
 
 @DriftDatabase(
   tables: [
-    Customer,
-    Rental,
+    User,
+    Rentals,
     ]
     )
 class AppDatabase extends _$AppDatabase {
@@ -37,6 +37,7 @@ class AppDatabase extends _$AppDatabase {
           );
   }
 
+
   Future<List<RentalData>> getRentals() async {
     return await select(rental).get();
   }
@@ -54,5 +55,7 @@ class AppDatabase extends _$AppDatabase {
           );
   }
 
-
+  Future<int> deleteUserToken() async {
+    return await delete(user).go();
+  }
 }

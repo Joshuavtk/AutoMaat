@@ -260,11 +260,11 @@ class CustomerCompanion extends UpdateCompanion<CustomerData> {
   }
 }
 
-class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
+class $RentalsTable extends Rentals with TableInfo<$RentalsTable, Rental> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $RentalTable(this.attachedDatabase, [this._alias]);
+  $RentalsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -278,7 +278,22 @@ class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
   @override
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 32),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _longitudeMeta =
+      const VerificationMeta('longitude');
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+      'longitude', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
+  static const VerificationMeta _latitudeMeta =
+      const VerificationMeta('latitude');
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+      'latitude', aliasedName, false,
+      type: DriftSqlType.double, requiredDuringInsert: true);
   static const VerificationMeta _fromDateMeta =
       const VerificationMeta('fromDate');
   @override
@@ -289,19 +304,8 @@ class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
   @override
   late final GeneratedColumn<DateTime> toDate = GeneratedColumn<DateTime>(
       'to_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
-  static const VerificationMeta _latitudeMeta =
-      const VerificationMeta('latitude');
-  @override
-  late final GeneratedColumn<String> latitude = GeneratedColumn<String>(
-      'latitude', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _longitudeMeta =
-      const VerificationMeta('longitude');
-  @override
-  late final GeneratedColumn<String> longitude = GeneratedColumn<String>(
-      'longitude', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
+      type: DriftSqlType.dateTime, requiredDuringInsert: true); 
+ 
   static const VerificationMeta _stateMeta = const VerificationMeta('state');
   @override
   late final GeneratedColumn<String> state = GeneratedColumn<String>(
@@ -309,14 +313,14 @@ class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, code, fromDate, toDate, latitude, longitude, state];
+      [id, code, longitude, latitude, fromDate, toDate, state];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'rental';
+  static const String $name = 'rentals';
   @override
-  VerificationContext validateIntegrity(Insertable<RentalData> instance,
+  VerificationContext validateIntegrity(Insertable<Rental> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -328,6 +332,18 @@ class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
           _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
     } else if (isInserting) {
       context.missing(_codeMeta);
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(_longitudeMeta,
+          longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta));
+    } else if (isInserting) {
+      context.missing(_longitudeMeta);
+    }
+    if (data.containsKey('latitude')) {
+      context.handle(_latitudeMeta,
+          latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta));
+    } else if (isInserting) {
+      context.missing(_latitudeMeta);
     }
     if (data.containsKey('from_date')) {
       context.handle(_fromDateMeta,
@@ -341,18 +357,6 @@ class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
     } else if (isInserting) {
       context.missing(_toDateMeta);
     }
-    if (data.containsKey('latitude')) {
-      context.handle(_latitudeMeta,
-          latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta));
-    } else if (isInserting) {
-      context.missing(_latitudeMeta);
-    }
-    if (data.containsKey('longitude')) {
-      context.handle(_longitudeMeta,
-          longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta));
-    } else if (isInserting) {
-      context.missing(_longitudeMeta);
-    }
     if (data.containsKey('state')) {
       context.handle(
           _stateMeta, state.isAcceptableOrUnknown(data['state']!, _stateMeta));
@@ -365,83 +369,81 @@ class $RentalTable extends r.Rental with TableInfo<$RentalTable, RentalData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  RentalData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Rental map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RentalData(
+    return Rental(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      longitude: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}longitude'])!,
+      latitude: attachedDatabase.typeMapping
+          .read(DriftSqlType.double, data['${effectivePrefix}latitude'])!,
       fromDate: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}from_date'])!,
       toDate: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}to_date'])!,
-      latitude: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}latitude'])!,
-      longitude: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}longitude'])!,
       state: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}state'])!,
     );
   }
 
   @override
-  $RentalTable createAlias(String alias) {
-    return $RentalTable(attachedDatabase, alias);
+  $RentalsTable createAlias(String alias) {
+    return $RentalsTable(attachedDatabase, alias);
   }
 }
 
-class RentalData extends DataClass implements Insertable<RentalData> {
+class Rental extends DataClass implements Insertable<Rental> {
   final int id;
   final String code;
+  final double longitude;
+  final double latitude;
   final DateTime fromDate;
   final DateTime toDate;
-  final String latitude;
-  final String longitude;
   final String state;
-  const RentalData(
+  const Rental(
       {required this.id,
       required this.code,
+      required this.longitude,
+      required this.latitude,
       required this.fromDate,
       required this.toDate,
-      required this.latitude,
-      required this.longitude,
       required this.state});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['code'] = Variable<String>(code);
+    map['longitude'] = Variable<double>(longitude);
+    map['latitude'] = Variable<double>(latitude);
     map['from_date'] = Variable<DateTime>(fromDate);
     map['to_date'] = Variable<DateTime>(toDate);
-    map['latitude'] = Variable<String>(latitude);
-    map['longitude'] = Variable<String>(longitude);
     map['state'] = Variable<String>(state);
     return map;
   }
-
-  RentalCompanion toCompanion(bool nullToAbsent) {
-    return RentalCompanion(
+  RentalsCompanion toCompanion(bool nullToAbsent) {
+    return RentalsCompanion(
       id: Value(id),
       code: Value(code),
+      longitude: Value(longitude),
+      latitude: Value(latitude),
       fromDate: Value(fromDate),
       toDate: Value(toDate),
-      latitude: Value(latitude),
-      longitude: Value(longitude),
       state: Value(state),
     );
   }
-
-  factory RentalData.fromJson(Map<String, dynamic> json,
+  factory Rental.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RentalData(
+    return Rental(
       id: serializer.fromJson<int>(json['id']),
       code: serializer.fromJson<String>(json['code']),
+      longitude: serializer.fromJson<double>(json['longitude']),
+      latitude: serializer.fromJson<double>(json['latitude']),
       fromDate: serializer.fromJson<DateTime>(json['fromDate']),
       toDate: serializer.fromJson<DateTime>(json['toDate']),
-      latitude: serializer.fromJson<String>(json['latitude']),
-      longitude: serializer.fromJson<String>(json['longitude']),
       state: serializer.fromJson<String>(json['state']),
     );
   }
@@ -451,52 +453,51 @@ class RentalData extends DataClass implements Insertable<RentalData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'code': serializer.toJson<String>(code),
+      'longitude': serializer.toJson<double>(longitude),
+      'latitude': serializer.toJson<double>(latitude),
       'fromDate': serializer.toJson<DateTime>(fromDate),
       'toDate': serializer.toJson<DateTime>(toDate),
-      'latitude': serializer.toJson<String>(latitude),
-      'longitude': serializer.toJson<String>(longitude),
       'state': serializer.toJson<String>(state),
     };
   }
-
-  RentalData copyWith(
+  Rental copyWith(
           {int? id,
           String? code,
+          double? longitude,
+          double? latitude,
           DateTime? fromDate,
           DateTime? toDate,
-          String? latitude,
-          String? longitude,
           String? state}) =>
-      RentalData(
+      Rental(
         id: id ?? this.id,
         code: code ?? this.code,
+        longitude: longitude ?? this.longitude,
+        latitude: latitude ?? this.latitude,
         fromDate: fromDate ?? this.fromDate,
         toDate: toDate ?? this.toDate,
-        latitude: latitude ?? this.latitude,
-        longitude: longitude ?? this.longitude,
         state: state ?? this.state,
       );
-  RentalData copyWithCompanion(RentalCompanion data) {
-    return RentalData(
+  Rental copyWithCompanion(RentalsCompanion data) {
+    return Rental(
       id: data.id.present ? data.id.value : this.id,
       code: data.code.present ? data.code.value : this.code,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
       fromDate: data.fromDate.present ? data.fromDate.value : this.fromDate,
       toDate: data.toDate.present ? data.toDate.value : this.toDate,
-      latitude: data.latitude.present ? data.latitude.value : this.latitude,
-      longitude: data.longitude.present ? data.longitude.value : this.longitude,
       state: data.state.present ? data.state.value : this.state,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('RentalData(')
+    return (StringBuffer('Rental(')
           ..write('id: $id, ')
           ..write('code: $code, ')
+          ..write('longitude: $longitude, ')
+          ..write('latitude: $latitude, ')
           ..write('fromDate: $fromDate, ')
           ..write('toDate: $toDate, ')
-          ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude, ')
           ..write('state: $state')
           ..write(')'))
         .toString();
@@ -504,86 +505,85 @@ class RentalData extends DataClass implements Insertable<RentalData> {
 
   @override
   int get hashCode =>
-      Object.hash(id, code, fromDate, toDate, latitude, longitude, state);
+      Object.hash(id, code, longitude, latitude, fromDate, toDate, state);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is RentalData &&
+      (other is Rental &&
           other.id == this.id &&
           other.code == this.code &&
+          other.longitude == this.longitude &&
+          other.latitude == this.latitude &&
           other.fromDate == this.fromDate &&
           other.toDate == this.toDate &&
-          other.latitude == this.latitude &&
-          other.longitude == this.longitude &&
           other.state == this.state);
 }
 
-class RentalCompanion extends UpdateCompanion<RentalData> {
+class RentalsCompanion extends UpdateCompanion<Rental> {
   final Value<int> id;
   final Value<String> code;
+  final Value<double> longitude;
+  final Value<double> latitude;
   final Value<DateTime> fromDate;
   final Value<DateTime> toDate;
-  final Value<String> latitude;
-  final Value<String> longitude;
   final Value<String> state;
-  const RentalCompanion({
+  const RentalsCompanion({
     this.id = const Value.absent(),
     this.code = const Value.absent(),
+    this.longitude = const Value.absent(),
+    this.latitude = const Value.absent(),
     this.fromDate = const Value.absent(),
     this.toDate = const Value.absent(),
-    this.latitude = const Value.absent(),
-    this.longitude = const Value.absent(),
     this.state = const Value.absent(),
   });
-  RentalCompanion.insert({
+  RentalsCompanion.insert({
     this.id = const Value.absent(),
     required String code,
+    required double longitude,
+    required double latitude,
     required DateTime fromDate,
     required DateTime toDate,
-    required String latitude,
-    required String longitude,
     required String state,
   })  : code = Value(code),
+        longitude = Value(longitude),
+        latitude = Value(latitude),
         fromDate = Value(fromDate),
         toDate = Value(toDate),
-        latitude = Value(latitude),
-        longitude = Value(longitude),
         state = Value(state);
-  static Insertable<RentalData> custom({
+  static Insertable<Rental> custom({
     Expression<int>? id,
     Expression<String>? code,
+    Expression<double>? longitude,
+    Expression<double>? latitude,
     Expression<DateTime>? fromDate,
     Expression<DateTime>? toDate,
-    Expression<String>? latitude,
-    Expression<String>? longitude,
     Expression<String>? state,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (code != null) 'code': code,
+      if (longitude != null) 'longitude': longitude,
+      if (latitude != null) 'latitude': latitude,
       if (fromDate != null) 'from_date': fromDate,
       if (toDate != null) 'to_date': toDate,
-      if (latitude != null) 'latitude': latitude,
-      if (longitude != null) 'longitude': longitude,
       if (state != null) 'state': state,
     });
   }
-
-  RentalCompanion copyWith(
+  RentalsCompanion copyWith(
       {Value<int>? id,
       Value<String>? code,
+      Value<double>? longitude,
+      Value<double>? latitude,
       Value<DateTime>? fromDate,
       Value<DateTime>? toDate,
-      Value<String>? latitude,
-      Value<String>? longitude,
       Value<String>? state}) {
-    return RentalCompanion(
+    return RentalsCompanion(
       id: id ?? this.id,
       code: code ?? this.code,
+      longitude: longitude ?? this.longitude,
+      latitude: latitude ?? this.latitude,
       fromDate: fromDate ?? this.fromDate,
       toDate: toDate ?? this.toDate,
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
       state: state ?? this.state,
     );
   }
@@ -597,17 +597,17 @@ class RentalCompanion extends UpdateCompanion<RentalData> {
     if (code.present) {
       map['code'] = Variable<String>(code.value);
     }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
     if (fromDate.present) {
       map['from_date'] = Variable<DateTime>(fromDate.value);
     }
     if (toDate.present) {
       map['to_date'] = Variable<DateTime>(toDate.value);
-    }
-    if (latitude.present) {
-      map['latitude'] = Variable<String>(latitude.value);
-    }
-    if (longitude.present) {
-      map['longitude'] = Variable<String>(longitude.value);
     }
     if (state.present) {
       map['state'] = Variable<String>(state.value);
@@ -617,13 +617,13 @@ class RentalCompanion extends UpdateCompanion<RentalData> {
 
   @override
   String toString() {
-    return (StringBuffer('RentalCompanion(')
+    return (StringBuffer('RentalsCompanion(')
           ..write('id: $id, ')
           ..write('code: $code, ')
+          ..write('longitude: $longitude, ')
+          ..write('latitude: $latitude, ')
           ..write('fromDate: $fromDate, ')
           ..write('toDate: $toDate, ')
-          ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude, ')
           ..write('state: $state')
           ..write(')'))
         .toString();
@@ -633,13 +633,13 @@ class RentalCompanion extends UpdateCompanion<RentalData> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $CustomerTable customer = $CustomerTable(this);
-  late final $RentalTable rental = $RentalTable(this);
+  late final $UserTable user = $UserTable(this);
+  late final $RentalsTable rentals = $RentalsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [customer, rental];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [user, rentals];
 }
 
 typedef $$CustomerTableCreateCompanionBuilder = CustomerCompanion Function({
@@ -975,12 +975,200 @@ typedef $$RentalTableProcessedTableManager = ProcessedTableManager<
     (RentalData, BaseReferences<_$AppDatabase, $RentalTable, RentalData>),
     RentalData,
     PrefetchHooks Function()>;
+typedef $$RentalsTableCreateCompanionBuilder = RentalsCompanion Function({
+  Value<int> id,
+  required String code,
+  required double longitude,
+  required double latitude,
+  required DateTime fromDate,
+  required DateTime toDate,
+  required String state,
+});
+typedef $$RentalsTableUpdateCompanionBuilder = RentalsCompanion Function({
+  Value<int> id,
+  Value<String> code,
+  Value<double> longitude,
+  Value<double> latitude,
+  Value<DateTime> fromDate,
+  Value<DateTime> toDate,
+  Value<String> state,
+});
+
+class $$RentalsTableFilterComposer
+    extends Composer<_$AppDatabase, $RentalsTable> {
+  $$RentalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+      column: $table.longitude, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+      column: $table.latitude, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get fromDate => $composableBuilder(
+      column: $table.fromDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get toDate => $composableBuilder(
+      column: $table.toDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+}
+
+class $$RentalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $RentalsTable> {
+  $$RentalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+      column: $table.longitude, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<double> get latitude => $composableBuilder(
+      column: $table.latitude, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get fromDate => $composableBuilder(
+      column: $table.fromDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get toDate => $composableBuilder(
+      column: $table.toDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RentalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RentalsTable> {
+  $$RentalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fromDate =>
+      $composableBuilder(column: $table.fromDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get toDate =>
+      $composableBuilder(column: $table.toDate, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$RentalsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $RentalsTable,
+    Rental,
+    $$RentalsTableFilterComposer,
+    $$RentalsTableOrderingComposer,
+    $$RentalsTableAnnotationComposer,
+    $$RentalsTableCreateCompanionBuilder,
+    $$RentalsTableUpdateCompanionBuilder,
+    (Rental, BaseReferences<_$AppDatabase, $RentalsTable, Rental>),
+    Rental,
+    PrefetchHooks Function()> {
+  $$RentalsTableTableManager(_$AppDatabase db, $RentalsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RentalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RentalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RentalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> code = const Value.absent(),
+            Value<double> longitude = const Value.absent(),
+            Value<double> latitude = const Value.absent(),
+            Value<DateTime> fromDate = const Value.absent(),
+            Value<DateTime> toDate = const Value.absent(),
+            Value<String> state = const Value.absent(),
+          }) =>
+              RentalsCompanion(
+            id: id,
+            code: code,
+            longitude: longitude,
+            latitude: latitude,
+            fromDate: fromDate,
+            toDate: toDate,
+            state: state,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String code,
+            required double longitude,
+            required double latitude,
+            required DateTime fromDate,
+            required DateTime toDate,
+            required String state,
+          }) =>
+              RentalsCompanion.insert(
+            id: id,
+            code: code,
+            longitude: longitude,
+            latitude: latitude,
+            fromDate: fromDate,
+            toDate: toDate,
+            state: state,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$RentalsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $RentalsTable,
+    Rental,
+    $$RentalsTableFilterComposer,
+    $$RentalsTableOrderingComposer,
+    $$RentalsTableAnnotationComposer,
+    $$RentalsTableCreateCompanionBuilder,
+    $$RentalsTableUpdateCompanionBuilder,
+    (Rental, BaseReferences<_$AppDatabase, $RentalsTable, Rental>),
+    Rental,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$CustomerTableTableManager get customer =>
-      $$CustomerTableTableManager(_db, _db.customer);
-  $$RentalTableTableManager get rental =>
-      $$RentalTableTableManager(_db, _db.rental);
+  $$UserTableTableManager get user => $$UserTableTableManager(_db, _db.user);
+  $$RentalsTableTableManager get rentals =>
+      $$RentalsTableTableManager(_db, _db.rentals);
 }
