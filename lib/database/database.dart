@@ -1,35 +1,58 @@
+import 'package:auto_maat/database/table/rental.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import './table/user.dart';
+import 'table/customer.dart';
+import 'package:auto_maat/modules/dataobject/rental.dart' as r;
+import 'package:auto_maat/modules/dataobject/customer.dart' as c;
 
 part 'database.g.dart';
 
 @DriftDatabase(
   tables: [
-    User
+    Customer,
+    Rental,
     ]
     )
 class AppDatabase extends _$AppDatabase {
-  // After generating code, this class needs to define a `schemaVersion` getter
-  // and a constructor telling drift where the database should be stored.
-  // These are described in the getting started guide: https://drift.simonbinder.eu/setup/
   AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
 
   static QueryExecutor _openConnection() {
-    // `driftDatabase` from `package:drift_flutter` stores the database in
-    // `getApplicationDocumentsDirectory()`.
     return driftDatabase(name: 'my_database');
   }
 
-  Future<List<UserData>> getUsers() async {
-    return await select(user).get();
+  Future<List<CustomerData>> getCustomers() async {
+    return await select(customer).get();
   }
 
-  Future<int> saveItem(String item) async {
-    return await into(user)
-        .insert(UserCompanion.insert(token: item));
+  Future<int> saveCustomer(c.Customer i, String token) async {
+    return await into(customer)
+        .insert(CustomerCompanion.insert(
+          lastName: i.lastName,
+          firstName: i.firstName,
+          token: token,
+          )
+          );
   }
+
+  Future<List<RentalData>> getRentals() async {
+    return await select(rental).get();
+  }
+
+  Future<int> saveRental(r.Rental i) async {
+    return await into(rental)
+        .insert(RentalCompanion.insert(
+          code: i.code,
+          fromDate: i.fromDate,
+          toDate: i.toDate,
+          latitude: i.latitude.toString(),
+          longitude: i.longitude.toString(),
+          state: i.state,
+          )
+          );
+  }
+
+
 }

@@ -1,12 +1,11 @@
+import 'package:auto_maat/modules/dataobject/car.dart';
+import 'package:auto_maat/pages/car_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
 import 'zoek.dart';
-import 'dart:developer';
-import 'dart:convert';
-import '../modules/http.dart' as custom_http;
+import 'package:auto_maat/modules/http.dart' as custom_http;
 
 class Map extends StatefulWidget {
   const Map({super.key});
@@ -21,16 +20,18 @@ class MapWidget extends State<Map> {
   bool _serviceEnabled = false;
   PermissionStatus? _permissionGranted;
   LocationData? _locationData;
-  List<LatLng> carLocations = [];
+  List<Car> cars = [];
   var beginLat = 53.238316;
   var beginLong = 6.53497;
   double currentZoom = 16.0;
   LatLng currentCenter = const LatLng(53.238316, 6.53497);
+  final LayerHitNotifier hitNotifier = ValueNotifier(null);
+
   @override
   void initState() {
     super.initState();
     _initLocation();
-    _getCarLocations();
+    _getCars();
   }
 
   _initLocation() async {
@@ -52,25 +53,18 @@ class MapWidget extends State<Map> {
 
     _locationData = await location.getLocation();
     setState(() {
-      log(_locationData.toString());
       beginLat = _locationData?.latitude ?? beginLat;
       beginLong = _locationData?.longitude ?? beginLong;
+      //cheating:
+      beginLat = 53.238316;
+      beginLong = 6.53497;
+      
       currentCenter = LatLng(beginLat, beginLong);
       mapController.move(  
         currentCenter,
         currentZoom,
       );
     });
-  }
-
-  void _zoomIn() {
-    currentZoom = currentZoom + 1;
-    mapController.move(currentCenter, currentZoom);
-  }
-
-  void _zoomOut() {
-    currentZoom = currentZoom - 1;
-    mapController.move(currentCenter, currentZoom);
   }
 
   @override
@@ -90,20 +84,6 @@ class MapWidget extends State<Map> {
           alignment: AlignmentDirectional.bottomEnd,
           children: [
             _getMapWidget(),
-            Column(
-              children: [
-                FloatingActionButton(
-                  onPressed: _zoomIn,
-                  tooltip: 'ZoomIn',
-                  child: const Icon(Icons.add_circle_rounded),
-                ),
-                FloatingActionButton(
-                  onPressed: _zoomOut,
-                  tooltip: 'ZoomOut',
-                  child: const Icon(Icons.remove_circle_outline_rounded),
-                ),
-              ],
-            )
           ],
         ));
   }
@@ -112,12 +92,14 @@ class MapWidget extends State<Map> {
     return FlutterMap(
         mapController: mapController,
         options: const MapOptions(
+          initialCenter: LatLng(53.238316, 6.53497),
           initialZoom: 5,
+          interactionOptions: InteractionOptions(flags: InteractiveFlag.doubleTapDragZoom | InteractiveFlag.doubleTapZoom | InteractiveFlag.drag | InteractiveFlag.flingAnimation | InteractiveFlag.pinchMove | InteractiveFlag.pinchZoom | InteractiveFlag.scrollWheelZoom)
         ),
         children: [
           _getMapLayer(),
           _getCarPointersLayer(),
-          _getCurrentPositionLayer(),
+          //_getCurrentPositionLayer(),
         ]);
   }
 
@@ -129,18 +111,26 @@ class MapWidget extends State<Map> {
   }
 
   Widget _getCarPointersLayer() {
-    print("carLocations: $carLocations");
-
-    return CircleLayer(
+    return GestureDetector(
+    onTap: () {
+      Car car = hitNotifier.value!.hitValues.first as Car;
+      Navigator.push(context, MaterialPageRoute(
+            builder: (context) => CarDetail(car: car),
+            ));
+    },
+    child: CircleLayer(
+      hitNotifier: hitNotifier,
       circles: [
-        for (LatLng carLocation in carLocations) ...[
+        for (Car car in cars) ...[
           CircleMarker(
-            point: carLocation,
+            point: LatLng(car.latitude, car.longitude),
             radius: 30,
             useRadiusInMeter: true,
+            hitValue: car,
           ),
-        ]
+        ],
       ],
+    )
     );
   }
 
@@ -158,10 +148,10 @@ class MapWidget extends State<Map> {
     );
   }
 
-  _getCarLocations() async {
-    var temp = await custom_http.getCarLocations();
+  _getCars() async {
+    var temp = await custom_http.getCars();
     setState(() {
-      carLocations = temp;
+      cars = temp;
     });
   }
 }
