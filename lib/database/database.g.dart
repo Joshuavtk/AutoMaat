@@ -3,11 +3,12 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class $UserTable extends User with TableInfo<$UserTable, UserData> {
+class $CustomerTable extends c.Customer
+    with TableInfo<$CustomerTable, CustomerData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $UserTable(this.attachedDatabase, [this._alias]);
+  $CustomerTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -17,25 +18,49 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _lastNameMeta =
+      const VerificationMeta('lastName');
+  @override
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+      'last_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _firstNameMeta =
+      const VerificationMeta('firstName');
+  @override
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+      'first_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
   static const VerificationMeta _tokenMeta = const VerificationMeta('token');
   @override
   late final GeneratedColumn<String> token = GeneratedColumn<String>(
       'token', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, token];
+  List<GeneratedColumn> get $columns => [id, lastName, firstName, token];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'user';
+  static const String $name = 'customer';
   @override
-  VerificationContext validateIntegrity(Insertable<UserData> instance,
+  VerificationContext validateIntegrity(Insertable<CustomerData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(_lastNameMeta,
+          lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta));
+    } else if (isInserting) {
+      context.missing(_lastNameMeta);
+    }
+    if (data.containsKey('first_name')) {
+      context.handle(_firstNameMeta,
+          firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta));
+    } else if (isInserting) {
+      context.missing(_firstNameMeta);
     }
     if (data.containsKey('token')) {
       context.handle(
@@ -49,46 +74,62 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  UserData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  CustomerData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return UserData(
+    return CustomerData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      lastName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}last_name'])!,
+      firstName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}first_name'])!,
       token: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}token'])!,
     );
   }
 
   @override
-  $UserTable createAlias(String alias) {
-    return $UserTable(attachedDatabase, alias);
+  $CustomerTable createAlias(String alias) {
+    return $CustomerTable(attachedDatabase, alias);
   }
 }
 
-class UserData extends DataClass implements Insertable<UserData> {
+class CustomerData extends DataClass implements Insertable<CustomerData> {
   final int id;
+  final String lastName;
+  final String firstName;
   final String token;
-  const UserData({required this.id, required this.token});
+  const CustomerData(
+      {required this.id,
+      required this.lastName,
+      required this.firstName,
+      required this.token});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    map['last_name'] = Variable<String>(lastName);
+    map['first_name'] = Variable<String>(firstName);
     map['token'] = Variable<String>(token);
     return map;
   }
 
-  UserCompanion toCompanion(bool nullToAbsent) {
-    return UserCompanion(
+  CustomerCompanion toCompanion(bool nullToAbsent) {
+    return CustomerCompanion(
       id: Value(id),
+      lastName: Value(lastName),
+      firstName: Value(firstName),
       token: Value(token),
     );
   }
 
-  factory UserData.fromJson(Map<String, dynamic> json,
+  factory CustomerData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return UserData(
+    return CustomerData(
       id: serializer.fromJson<int>(json['id']),
+      lastName: serializer.fromJson<String>(json['lastName']),
+      firstName: serializer.fromJson<String>(json['firstName']),
       token: serializer.fromJson<String>(json['token']),
     );
   }
@@ -97,62 +138,94 @@ class UserData extends DataClass implements Insertable<UserData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'lastName': serializer.toJson<String>(lastName),
+      'firstName': serializer.toJson<String>(firstName),
       'token': serializer.toJson<String>(token),
     };
   }
 
-  UserData copyWith({int? id, String? token}) => UserData(
+  CustomerData copyWith(
+          {int? id, String? lastName, String? firstName, String? token}) =>
+      CustomerData(
         id: id ?? this.id,
+        lastName: lastName ?? this.lastName,
+        firstName: firstName ?? this.firstName,
         token: token ?? this.token,
       );
-  UserData copyWithCompanion(UserCompanion data) {
-    return UserData(
+  CustomerData copyWithCompanion(CustomerCompanion data) {
+    return CustomerData(
       id: data.id.present ? data.id.value : this.id,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
       token: data.token.present ? data.token.value : this.token,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('UserData(')
+    return (StringBuffer('CustomerData(')
           ..write('id: $id, ')
+          ..write('lastName: $lastName, ')
+          ..write('firstName: $firstName, ')
           ..write('token: $token')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, token);
+  int get hashCode => Object.hash(id, lastName, firstName, token);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is UserData && other.id == this.id && other.token == this.token);
+      (other is CustomerData &&
+          other.id == this.id &&
+          other.lastName == this.lastName &&
+          other.firstName == this.firstName &&
+          other.token == this.token);
 }
 
-class UserCompanion extends UpdateCompanion<UserData> {
+class CustomerCompanion extends UpdateCompanion<CustomerData> {
   final Value<int> id;
+  final Value<String> lastName;
+  final Value<String> firstName;
   final Value<String> token;
-  const UserCompanion({
+  const CustomerCompanion({
     this.id = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.firstName = const Value.absent(),
     this.token = const Value.absent(),
   });
-  UserCompanion.insert({
+  CustomerCompanion.insert({
     this.id = const Value.absent(),
+    required String lastName,
+    required String firstName,
     required String token,
-  }) : token = Value(token);
-  static Insertable<UserData> custom({
+  })  : lastName = Value(lastName),
+        firstName = Value(firstName),
+        token = Value(token);
+  static Insertable<CustomerData> custom({
     Expression<int>? id,
+    Expression<String>? lastName,
+    Expression<String>? firstName,
     Expression<String>? token,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (lastName != null) 'last_name': lastName,
+      if (firstName != null) 'first_name': firstName,
       if (token != null) 'token': token,
     });
   }
 
-  UserCompanion copyWith({Value<int>? id, Value<String>? token}) {
-    return UserCompanion(
+  CustomerCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? lastName,
+      Value<String>? firstName,
+      Value<String>? token}) {
+    return CustomerCompanion(
       id: id ?? this.id,
+      lastName: lastName ?? this.lastName,
+      firstName: firstName ?? this.firstName,
       token: token ?? this.token,
     );
   }
@@ -163,6 +236,12 @@ class UserCompanion extends UpdateCompanion<UserData> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
+    }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
     if (token.present) {
       map['token'] = Variable<String>(token.value);
     }
@@ -171,8 +250,10 @@ class UserCompanion extends UpdateCompanion<UserData> {
 
   @override
   String toString() {
-    return (StringBuffer('UserCompanion(')
+    return (StringBuffer('CustomerCompanion(')
           ..write('id: $id, ')
+          ..write('lastName: $lastName, ')
+          ..write('firstName: $firstName, ')
           ..write('token: $token')
           ..write(')'))
         .toString();
@@ -223,7 +304,8 @@ class $RentalsTable extends Rentals with TableInfo<$RentalsTable, Rental> {
   @override
   late final GeneratedColumn<DateTime> toDate = GeneratedColumn<DateTime>(
       'to_date', aliasedName, false,
-      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+      type: DriftSqlType.dateTime, requiredDuringInsert: true); 
+ 
   static const VerificationMeta _stateMeta = const VerificationMeta('state');
   @override
   late final GeneratedColumn<String> state = GeneratedColumn<String>(
@@ -341,7 +423,6 @@ class Rental extends DataClass implements Insertable<Rental> {
     map['state'] = Variable<String>(state);
     return map;
   }
-
   RentalsCompanion toCompanion(bool nullToAbsent) {
     return RentalsCompanion(
       id: Value(id),
@@ -353,7 +434,6 @@ class Rental extends DataClass implements Insertable<Rental> {
       state: Value(state),
     );
   }
-
   factory Rental.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -380,7 +460,6 @@ class Rental extends DataClass implements Insertable<Rental> {
       'state': serializer.toJson<String>(state),
     };
   }
-
   Rental copyWith(
           {int? id,
           String? code,
@@ -490,7 +569,6 @@ class RentalsCompanion extends UpdateCompanion<Rental> {
       if (state != null) 'state': state,
     });
   }
-
   RentalsCompanion copyWith(
       {Value<int>? id,
       Value<String>? code,
@@ -564,17 +642,22 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [user, rentals];
 }
 
-typedef $$UserTableCreateCompanionBuilder = UserCompanion Function({
+typedef $$CustomerTableCreateCompanionBuilder = CustomerCompanion Function({
   Value<int> id,
+  required String lastName,
+  required String firstName,
   required String token,
 });
-typedef $$UserTableUpdateCompanionBuilder = UserCompanion Function({
+typedef $$CustomerTableUpdateCompanionBuilder = CustomerCompanion Function({
   Value<int> id,
+  Value<String> lastName,
+  Value<String> firstName,
   Value<String> token,
 });
 
-class $$UserTableFilterComposer extends Composer<_$AppDatabase, $UserTable> {
-  $$UserTableFilterComposer({
+class $$CustomerTableFilterComposer
+    extends Composer<_$AppDatabase, $CustomerTable> {
+  $$CustomerTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -584,12 +667,19 @@ class $$UserTableFilterComposer extends Composer<_$AppDatabase, $UserTable> {
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get token => $composableBuilder(
       column: $table.token, builder: (column) => ColumnFilters(column));
 }
 
-class $$UserTableOrderingComposer extends Composer<_$AppDatabase, $UserTable> {
-  $$UserTableOrderingComposer({
+class $$CustomerTableOrderingComposer
+    extends Composer<_$AppDatabase, $CustomerTable> {
+  $$CustomerTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -599,13 +689,19 @@ class $$UserTableOrderingComposer extends Composer<_$AppDatabase, $UserTable> {
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get token => $composableBuilder(
       column: $table.token, builder: (column) => ColumnOrderings(column));
 }
 
-class $$UserTableAnnotationComposer
-    extends Composer<_$AppDatabase, $UserTable> {
-  $$UserTableAnnotationComposer({
+class $$CustomerTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CustomerTable> {
+  $$CustomerTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -615,46 +711,60 @@ class $$UserTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
   GeneratedColumn<String> get token =>
       $composableBuilder(column: $table.token, builder: (column) => column);
 }
 
-class $$UserTableTableManager extends RootTableManager<
+class $$CustomerTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $UserTable,
-    UserData,
-    $$UserTableFilterComposer,
-    $$UserTableOrderingComposer,
-    $$UserTableAnnotationComposer,
-    $$UserTableCreateCompanionBuilder,
-    $$UserTableUpdateCompanionBuilder,
-    (UserData, BaseReferences<_$AppDatabase, $UserTable, UserData>),
-    UserData,
+    $CustomerTable,
+    CustomerData,
+    $$CustomerTableFilterComposer,
+    $$CustomerTableOrderingComposer,
+    $$CustomerTableAnnotationComposer,
+    $$CustomerTableCreateCompanionBuilder,
+    $$CustomerTableUpdateCompanionBuilder,
+    (CustomerData, BaseReferences<_$AppDatabase, $CustomerTable, CustomerData>),
+    CustomerData,
     PrefetchHooks Function()> {
-  $$UserTableTableManager(_$AppDatabase db, $UserTable table)
+  $$CustomerTableTableManager(_$AppDatabase db, $CustomerTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$UserTableFilterComposer($db: db, $table: table),
+              $$CustomerTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$UserTableOrderingComposer($db: db, $table: table),
+              $$CustomerTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$UserTableAnnotationComposer($db: db, $table: table),
+              $$CustomerTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
+            Value<String> lastName = const Value.absent(),
+            Value<String> firstName = const Value.absent(),
             Value<String> token = const Value.absent(),
           }) =>
-              UserCompanion(
+              CustomerCompanion(
             id: id,
+            lastName: lastName,
+            firstName: firstName,
             token: token,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
+            required String lastName,
+            required String firstName,
             required String token,
           }) =>
-              UserCompanion.insert(
+              CustomerCompanion.insert(
             id: id,
+            lastName: lastName,
+            firstName: firstName,
             token: token,
           ),
           withReferenceMapper: (p0) => p0
@@ -664,17 +774,206 @@ class $$UserTableTableManager extends RootTableManager<
         ));
 }
 
-typedef $$UserTableProcessedTableManager = ProcessedTableManager<
+typedef $$CustomerTableProcessedTableManager = ProcessedTableManager<
     _$AppDatabase,
-    $UserTable,
-    UserData,
-    $$UserTableFilterComposer,
-    $$UserTableOrderingComposer,
-    $$UserTableAnnotationComposer,
-    $$UserTableCreateCompanionBuilder,
-    $$UserTableUpdateCompanionBuilder,
-    (UserData, BaseReferences<_$AppDatabase, $UserTable, UserData>),
-    UserData,
+    $CustomerTable,
+    CustomerData,
+    $$CustomerTableFilterComposer,
+    $$CustomerTableOrderingComposer,
+    $$CustomerTableAnnotationComposer,
+    $$CustomerTableCreateCompanionBuilder,
+    $$CustomerTableUpdateCompanionBuilder,
+    (CustomerData, BaseReferences<_$AppDatabase, $CustomerTable, CustomerData>),
+    CustomerData,
+    PrefetchHooks Function()>;
+typedef $$RentalTableCreateCompanionBuilder = RentalCompanion Function({
+  Value<int> id,
+  required String code,
+  required DateTime fromDate,
+  required DateTime toDate,
+  required String latitude,
+  required String longitude,
+  required String state,
+});
+typedef $$RentalTableUpdateCompanionBuilder = RentalCompanion Function({
+  Value<int> id,
+  Value<String> code,
+  Value<DateTime> fromDate,
+  Value<DateTime> toDate,
+  Value<String> latitude,
+  Value<String> longitude,
+  Value<String> state,
+});
+
+class $$RentalTableFilterComposer
+    extends Composer<_$AppDatabase, $RentalTable> {
+  $$RentalTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get fromDate => $composableBuilder(
+      column: $table.fromDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get toDate => $composableBuilder(
+      column: $table.toDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get latitude => $composableBuilder(
+      column: $table.latitude, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get longitude => $composableBuilder(
+      column: $table.longitude, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnFilters(column));
+}
+
+class $$RentalTableOrderingComposer
+    extends Composer<_$AppDatabase, $RentalTable> {
+  $$RentalTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get code => $composableBuilder(
+      column: $table.code, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get fromDate => $composableBuilder(
+      column: $table.fromDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get toDate => $composableBuilder(
+      column: $table.toDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get latitude => $composableBuilder(
+      column: $table.latitude, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get longitude => $composableBuilder(
+      column: $table.longitude, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get state => $composableBuilder(
+      column: $table.state, builder: (column) => ColumnOrderings(column));
+}
+
+class $$RentalTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RentalTable> {
+  $$RentalTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get fromDate =>
+      $composableBuilder(column: $table.fromDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get toDate =>
+      $composableBuilder(column: $table.toDate, builder: (column) => column);
+
+  GeneratedColumn<String> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<String> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<String> get state =>
+      $composableBuilder(column: $table.state, builder: (column) => column);
+}
+
+class $$RentalTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $RentalTable,
+    RentalData,
+    $$RentalTableFilterComposer,
+    $$RentalTableOrderingComposer,
+    $$RentalTableAnnotationComposer,
+    $$RentalTableCreateCompanionBuilder,
+    $$RentalTableUpdateCompanionBuilder,
+    (RentalData, BaseReferences<_$AppDatabase, $RentalTable, RentalData>),
+    RentalData,
+    PrefetchHooks Function()> {
+  $$RentalTableTableManager(_$AppDatabase db, $RentalTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RentalTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RentalTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RentalTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> code = const Value.absent(),
+            Value<DateTime> fromDate = const Value.absent(),
+            Value<DateTime> toDate = const Value.absent(),
+            Value<String> latitude = const Value.absent(),
+            Value<String> longitude = const Value.absent(),
+            Value<String> state = const Value.absent(),
+          }) =>
+              RentalCompanion(
+            id: id,
+            code: code,
+            fromDate: fromDate,
+            toDate: toDate,
+            latitude: latitude,
+            longitude: longitude,
+            state: state,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String code,
+            required DateTime fromDate,
+            required DateTime toDate,
+            required String latitude,
+            required String longitude,
+            required String state,
+          }) =>
+              RentalCompanion.insert(
+            id: id,
+            code: code,
+            fromDate: fromDate,
+            toDate: toDate,
+            latitude: latitude,
+            longitude: longitude,
+            state: state,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$RentalTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $RentalTable,
+    RentalData,
+    $$RentalTableFilterComposer,
+    $$RentalTableOrderingComposer,
+    $$RentalTableAnnotationComposer,
+    $$RentalTableCreateCompanionBuilder,
+    $$RentalTableUpdateCompanionBuilder,
+    (RentalData, BaseReferences<_$AppDatabase, $RentalTable, RentalData>),
+    RentalData,
     PrefetchHooks Function()>;
 typedef $$RentalsTableCreateCompanionBuilder = RentalsCompanion Function({
   Value<int> id,

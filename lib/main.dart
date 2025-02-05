@@ -2,6 +2,8 @@ import 'package:auto_maat/pages/home.dart';
 import 'package:auto_maat/pages/login.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:auto_maat/pages/reserve.dart';
+import 'package:auto_maat/pages/zoek.dart';
 
 import 'database/database.dart';
 
@@ -19,7 +21,7 @@ class LoginApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: LoginScreen());
+    return const MaterialApp(home: Zoek());
   }
 }
 
