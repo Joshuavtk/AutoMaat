@@ -1,16 +1,14 @@
 import 'package:auto_maat/database/table/rental.dart';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'table/customer.dart';
-import 'package:auto_maat/modules/dataobject/rental.dart' as r;
-import 'package:auto_maat/modules/dataobject/customer.dart' as c;
+import 'package:auto_maat/database/table/user.dart';
 
 part 'database.g.dart';
 
 @DriftDatabase(
   tables: [
     User,
-    Rentals,
+    Rentals
     ]
     )
 class AppDatabase extends _$AppDatabase {
@@ -23,36 +21,13 @@ class AppDatabase extends _$AppDatabase {
     return driftDatabase(name: 'my_database');
   }
 
-  Future<List<CustomerData>> getCustomers() async {
-    return await select(customer).get();
+    Future<List<UserData>> getUsers() async {
+    return await select(user).get();
   }
 
-  Future<int> saveCustomer(c.Customer i, String token) async {
-    return await into(customer)
-        .insert(CustomerCompanion.insert(
-          lastName: i.lastName,
-          firstName: i.firstName,
-          token: token,
-          )
-          );
-  }
-
-
-  Future<List<RentalData>> getRentals() async {
-    return await select(rental).get();
-  }
-
-  Future<int> saveRental(r.Rental i) async {
-    return await into(rental)
-        .insert(RentalCompanion.insert(
-          code: i.code,
-          fromDate: i.fromDate,
-          toDate: i.toDate,
-          latitude: i.latitude.toString(),
-          longitude: i.longitude.toString(),
-          state: i.state,
-          )
-          );
+  Future<int> saveItem(String item) async {
+    return await into(user)
+        .insert(UserCompanion.insert(token: item));
   }
 
   Future<int> deleteUserToken() async {
