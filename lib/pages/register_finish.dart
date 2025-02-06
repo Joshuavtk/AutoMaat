@@ -76,8 +76,6 @@ class _RegisterFinishPageState extends State<RegisterFinishScreen> {
   }
 
   registerPressed() async {
-    // print(
-    //     'Register with email: ${widget.email} pw: ${widget.password} fn: ${_firstNameFieldController.text} ln:${_lastNameFieldController.text} un: ${_usernameFieldController.text}');
     if (loading) {
       return null;
     }

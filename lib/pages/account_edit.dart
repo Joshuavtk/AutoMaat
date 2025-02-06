@@ -29,7 +29,6 @@ class _AccountEditPageState extends State<AccountEditScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Card(
-              margin: const EdgeInsets.all(10),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                 child: Column(
@@ -55,11 +54,12 @@ class _AccountEditPageState extends State<AccountEditScreen> {
               ),
             ),
             const Divider(
-              endIndent: 10,
-              indent: 10,
               height: 20,
             ),
-            const Text("Change password"),
+            const Text(
+              "Change password",
+              style: TextStyle(fontSize: 18),
+            ),
             const SizedBox(height: 15.0),
             TextField(
               controller: _currentPasswordFieldController,

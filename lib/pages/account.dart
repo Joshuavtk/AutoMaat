@@ -1,5 +1,7 @@
 import 'package:auto_maat/pages/account_edit.dart';
 import 'package:auto_maat/pages/login.dart';
+import 'package:auto_maat/pages/settings.dart';
+import 'package:auto_maat/pages/support.dart';
 import 'package:auto_maat/pages/timeline.dart';
 import 'package:auto_maat/ui/account_wrapper.dart';
 import 'package:flutter/material.dart';
@@ -84,8 +86,8 @@ class _AccountPageState extends State<AccountScreen> {
               )
             ],
           )),
-      fullWidthButton(context, 'App settings', Icons.settings_outlined, const TimelineScreen()),
-      fullWidthButton(context, 'Support', Icons.help_outline, const TimelineScreen()),
+      fullWidthButton(context, 'App settings', Icons.settings_outlined, const SettingsScreen()),
+      fullWidthButton(context, 'Support', Icons.help_outline, const SupportScreen()),
       fullWidthButton(context, 'App info', Icons.info_outline, const AppInfoScreen()),
     ]);
   }
