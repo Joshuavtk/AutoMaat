@@ -30,6 +30,10 @@ class Home extends StatelessWidget {
               onPressed: () => Navigator.push(context,
                   MaterialPageRoute(builder: (context) => const AccountScreen())),
               child: const Text('Naar account')),
+              ElevatedButton(
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const AccountScreen())),
+              child: const Text('Check internet connection page')),
         ])));
   }
 }

@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:auto_maat/pages/reserve.dart';
 import 'package:auto_maat/pages/zoek.dart';
 import 'package:auto_maat/pages/rentals.dart';
+import 'package:auto_maat/pages/internet_check.dart';
 
 import 'database/database.dart';
 
@@ -22,7 +23,7 @@ class LoginApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: Zoek());
+    return const MaterialApp(home: LoginScreen());
   }
 }
 
