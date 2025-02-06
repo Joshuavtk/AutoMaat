@@ -1,4 +1,5 @@
 import 'package:auto_maat/modules/user/user_service.dart';
+import 'package:auto_maat/pages/damage_report.dart';
 import 'package:auto_maat/ui/account_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -49,6 +50,7 @@ class _TimelinePageState extends State<TimelineScreen> {
                 "State: ${rental.state.value}",
               ),
               Text("Code: ${rental.code.value}"),
+              OutlinedButton(onPressed: () => goToDamageReportScreen(rental), child: const Text('Report damage'))
             ],
           ),
         ),
@@ -57,5 +59,9 @@ class _TimelinePageState extends State<TimelineScreen> {
     setState(() {
       timeline = records;
     });
+  }
+
+  goToDamageReportScreen(RentalsCompanion rentalData) {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => DamageReportScreen(rental: rentalData)));
   }
 }

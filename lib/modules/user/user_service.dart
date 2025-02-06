@@ -29,10 +29,23 @@ Future<bool> authenticate(username, password, rememberMe) async {
       print('Login geslaagd...: ${response.statusCode}');
       String bearerToken = jsonDecode(response.body)['id_token'];
 
+
+      final accountDataResponse = await http.get(
+        Uri.http(apiUrl, 'api/account'),
+        headers: {"Content-Type": "application/json", "Authorization": 'Bearer $bearerToken'},
+      );
+
+      var accountData = jsonDecode(accountDataResponse.body);
+      String firstName = accountData['firstName'];
+      String lastName = accountData['lastName'];
+      String email = accountData['email'];
+      String login = accountData['login'];
+
       AppDatabase database = AppDatabase();
       // var users = await database.getUsers();
       // print(users);
-      await database.saveItem(bearerToken);
+      // await database.saveItem(bearerToken);
+      await database.saveUser(token: bearerToken, firstName: firstName, lastName: lastName, email: email, login: login);
 
       database.close();
 
@@ -41,6 +54,42 @@ Future<bool> authenticate(username, password, rememberMe) async {
       // Handle failed upload
       //TODO: show failed login attempt error
       print('Login niet geslaagd. Status code: ${response.statusCode}');
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    // Probably means that network is offline or server cannot be reached.
+    print('Error: $error');
+  }
+
+  return false;
+}
+
+Future<bool> forgotPassword(email) async {
+  print("start forgot password $email");
+
+  // final payload = jsonEncode(<String, Object>{
+  //   email
+  // });
+
+  try {
+    final response = await http.post(
+      Uri.http(apiUrl, 'api/account/reset-password/init'),
+      headers: {"Content-Type": "application/json"},
+      body: email,
+    );
+
+    // print(response);
+    // print(response.body);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      print('Password reset success...: ${response.statusCode}');
+
+      return true;
+    } else {
+      // Handle failed upload
+      //TODO: show failed login attempt error
+      print('Error : ${response.statusCode}');
     }
   } catch (error) {
     // Handle any errors that occurred during the HTTP request
@@ -64,7 +113,7 @@ Future<bool> register(email, firstName, lastName, username, password) async {
 
   try {
     final response = await http.post(
-      Uri.http(apiUrl, 'api/register'),
+      Uri.http(apiUrl, 'api/AM/register'),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -100,6 +149,8 @@ Future<List<RentalsCompanion>> timelineData() async {
     url,
     headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
   );
+
+  print(response.statusCode);
   if (response.statusCode == 200) {
     List<RentalsCompanion> rentals = [];
     for (var item in jsonDecode(response.body)) {
@@ -116,6 +167,8 @@ Future<List<RentalsCompanion>> timelineData() async {
       rentals.add(rental);
     }
     return rentals;
+  } else if (response.statusCode == 401) {
+    // Authorization token invalid.
   }
   //Should only happen on no network connection.
   print('Error retrieving timeline data');
@@ -131,6 +184,20 @@ Future<String> getUserToken() async {
   String token = userData.token;
 
   return token;
+}
+
+Future<UserData> getUserData() async {
+  AppDatabase database = AppDatabase();
+  var users = await database.getUsers();
+  database.close();
+
+  UserData userData = users.first;
+
+  return userData;
+}
+
+UserData fakeUser() {
+  return const UserData(id: 1, token: '', firstName: '', lastName: '', email: '', login: '');
 }
 
 Future<bool> changePassword(currentPassword, newPassword) async {
@@ -150,6 +217,69 @@ Future<bool> changePassword(currentPassword, newPassword) async {
   try {
     if (response.statusCode == 200 || response.statusCode == 201) {
       // Handle successful upload
+      return true;
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    print('Error: $error');
+  }
+
+  return false;
+}
+
+Future<int> uploadDamageReport(RentalsCompanion rental, String description) async {
+  String token = await getUserToken();
+
+  final payload = jsonEncode(<String, Object>{
+    "code": rental.code.value,
+    "description": description,
+  });
+
+  final response = await http.post(
+    Uri.http(apiUrl, 'api/inspections'),
+    headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
+    body: payload,
+  );
+
+  print(response.body);
+  print(response.statusCode);
+
+  try {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      int reportId = jsonDecode(response.body)['id'];
+      return reportId;
+    }
+  } catch (error) {
+    // Handle any errors that occurred during the HTTP request
+    print('Error: $error');
+  }
+
+  return 0;
+}
+
+Future<bool> uploadImageToDamageReport(int reportId, String image) async {
+  print('start upload picture');
+  String token = await getUserToken();
+
+  final payload = jsonEncode(<String, Object>{
+    // "id": reportId,
+    "photo": image, "photoContentType": "image/png"
+  });
+
+  final response = await http.post(
+    Uri.http(apiUrl, 'api/inspection-photos'),
+    headers: {"Content-Type": "application/json", "Authorization": 'Bearer $token'},
+    body: payload,
+  );
+
+  print(response.body);
+  print(response.statusCode);
+
+  try {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      // Handle successful upload
+      // int reportId = jsonDecode(response.body)['id'];
       return true;
     }
   } catch (error) {

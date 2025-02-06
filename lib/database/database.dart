@@ -27,7 +27,12 @@ class AppDatabase extends _$AppDatabase {
 
   Future<int> saveItem(String item) async {
     return await into(user)
-        .insert(UserCompanion.insert(token: item));
+        .insert(UserCompanion.insert(token: item, firstName: '', lastName: '', email: '', login: ''));
+  }
+
+  Future<int> saveUser({required String token, required String firstName, required String lastName, required String email, required String login}) async {
+    return await into(user)
+        .insert(UserCompanion.insert(token: token, firstName: firstName, lastName: lastName, email: email, login: login));
   }
 
   Future<int> deleteUserToken() async {

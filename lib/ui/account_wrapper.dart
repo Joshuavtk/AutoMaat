@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-Widget accountWrapper(BuildContext context, String title, {required List<Widget> children}) {
+Widget accountWrapper(BuildContext context, String title,
+    {required List<Widget> children, bool togglePadding = false}) {
   return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -12,6 +13,7 @@ Widget accountWrapper(BuildContext context, String title, {required List<Widget>
         centerTitle: true,
       ),
       body: ListView(
+        padding: EdgeInsets.all(togglePadding ? 15 : 0),
         children: children,
       ));
 }

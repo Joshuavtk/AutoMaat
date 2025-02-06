@@ -22,8 +22,31 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
   late final GeneratedColumn<String> token = GeneratedColumn<String>(
       'token', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _firstNameMeta =
+      const VerificationMeta('firstName');
   @override
-  List<GeneratedColumn> get $columns => [id, token];
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+      'first_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _lastNameMeta =
+      const VerificationMeta('lastName');
+  @override
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+      'last_name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _emailMeta = const VerificationMeta('email');
+  @override
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+      'email', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _loginMeta = const VerificationMeta('login');
+  @override
+  late final GeneratedColumn<String> login = GeneratedColumn<String>(
+      'login', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, token, firstName, lastName, email, login];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -43,6 +66,30 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
     } else if (isInserting) {
       context.missing(_tokenMeta);
     }
+    if (data.containsKey('first_name')) {
+      context.handle(_firstNameMeta,
+          firstName.isAcceptableOrUnknown(data['first_name']!, _firstNameMeta));
+    } else if (isInserting) {
+      context.missing(_firstNameMeta);
+    }
+    if (data.containsKey('last_name')) {
+      context.handle(_lastNameMeta,
+          lastName.isAcceptableOrUnknown(data['last_name']!, _lastNameMeta));
+    } else if (isInserting) {
+      context.missing(_lastNameMeta);
+    }
+    if (data.containsKey('email')) {
+      context.handle(
+          _emailMeta, email.isAcceptableOrUnknown(data['email']!, _emailMeta));
+    } else if (isInserting) {
+      context.missing(_emailMeta);
+    }
+    if (data.containsKey('login')) {
+      context.handle(
+          _loginMeta, login.isAcceptableOrUnknown(data['login']!, _loginMeta));
+    } else if (isInserting) {
+      context.missing(_loginMeta);
+    }
     return context;
   }
 
@@ -56,6 +103,14 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       token: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}token'])!,
+      firstName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}first_name'])!,
+      lastName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}last_name'])!,
+      email: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}email'])!,
+      login: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}login'])!,
     );
   }
 
@@ -68,12 +123,26 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
 class UserData extends DataClass implements Insertable<UserData> {
   final int id;
   final String token;
-  const UserData({required this.id, required this.token});
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String login;
+  const UserData(
+      {required this.id,
+      required this.token,
+      required this.firstName,
+      required this.lastName,
+      required this.email,
+      required this.login});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['token'] = Variable<String>(token);
+    map['first_name'] = Variable<String>(firstName);
+    map['last_name'] = Variable<String>(lastName);
+    map['email'] = Variable<String>(email);
+    map['login'] = Variable<String>(login);
     return map;
   }
 
@@ -81,6 +150,10 @@ class UserData extends DataClass implements Insertable<UserData> {
     return UserCompanion(
       id: Value(id),
       token: Value(token),
+      firstName: Value(firstName),
+      lastName: Value(lastName),
+      email: Value(email),
+      login: Value(login),
     );
   }
 
@@ -90,6 +163,10 @@ class UserData extends DataClass implements Insertable<UserData> {
     return UserData(
       id: serializer.fromJson<int>(json['id']),
       token: serializer.fromJson<String>(json['token']),
+      firstName: serializer.fromJson<String>(json['firstName']),
+      lastName: serializer.fromJson<String>(json['lastName']),
+      email: serializer.fromJson<String>(json['email']),
+      login: serializer.fromJson<String>(json['login']),
     );
   }
   @override
@@ -98,17 +175,36 @@ class UserData extends DataClass implements Insertable<UserData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'token': serializer.toJson<String>(token),
+      'firstName': serializer.toJson<String>(firstName),
+      'lastName': serializer.toJson<String>(lastName),
+      'email': serializer.toJson<String>(email),
+      'login': serializer.toJson<String>(login),
     };
   }
 
-  UserData copyWith({int? id, String? token}) => UserData(
+  UserData copyWith(
+          {int? id,
+          String? token,
+          String? firstName,
+          String? lastName,
+          String? email,
+          String? login}) =>
+      UserData(
         id: id ?? this.id,
         token: token ?? this.token,
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        email: email ?? this.email,
+        login: login ?? this.login,
       );
   UserData copyWithCompanion(UserCompanion data) {
     return UserData(
       id: data.id.present ? data.id.value : this.id,
       token: data.token.present ? data.token.value : this.token,
+      firstName: data.firstName.present ? data.firstName.value : this.firstName,
+      lastName: data.lastName.present ? data.lastName.value : this.lastName,
+      email: data.email.present ? data.email.value : this.email,
+      login: data.login.present ? data.login.value : this.login,
     );
   }
 
@@ -116,44 +212,88 @@ class UserData extends DataClass implements Insertable<UserData> {
   String toString() {
     return (StringBuffer('UserData(')
           ..write('id: $id, ')
-          ..write('token: $token')
+          ..write('token: $token, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('email: $email, ')
+          ..write('login: $login')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, token);
+  int get hashCode => Object.hash(id, token, firstName, lastName, email, login);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is UserData && other.id == this.id && other.token == this.token);
+      (other is UserData &&
+          other.id == this.id &&
+          other.token == this.token &&
+          other.firstName == this.firstName &&
+          other.lastName == this.lastName &&
+          other.email == this.email &&
+          other.login == this.login);
 }
 
 class UserCompanion extends UpdateCompanion<UserData> {
   final Value<int> id;
   final Value<String> token;
+  final Value<String> firstName;
+  final Value<String> lastName;
+  final Value<String> email;
+  final Value<String> login;
   const UserCompanion({
     this.id = const Value.absent(),
     this.token = const Value.absent(),
+    this.firstName = const Value.absent(),
+    this.lastName = const Value.absent(),
+    this.email = const Value.absent(),
+    this.login = const Value.absent(),
   });
   UserCompanion.insert({
     this.id = const Value.absent(),
     required String token,
-  }) : token = Value(token);
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String login,
+  })  : token = Value(token),
+        firstName = Value(firstName),
+        lastName = Value(lastName),
+        email = Value(email),
+        login = Value(login);
   static Insertable<UserData> custom({
     Expression<int>? id,
     Expression<String>? token,
+    Expression<String>? firstName,
+    Expression<String>? lastName,
+    Expression<String>? email,
+    Expression<String>? login,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (token != null) 'token': token,
+      if (firstName != null) 'first_name': firstName,
+      if (lastName != null) 'last_name': lastName,
+      if (email != null) 'email': email,
+      if (login != null) 'login': login,
     });
   }
 
-  UserCompanion copyWith({Value<int>? id, Value<String>? token}) {
+  UserCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? token,
+      Value<String>? firstName,
+      Value<String>? lastName,
+      Value<String>? email,
+      Value<String>? login}) {
     return UserCompanion(
       id: id ?? this.id,
       token: token ?? this.token,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      email: email ?? this.email,
+      login: login ?? this.login,
     );
   }
 
@@ -166,6 +306,18 @@ class UserCompanion extends UpdateCompanion<UserData> {
     if (token.present) {
       map['token'] = Variable<String>(token.value);
     }
+    if (firstName.present) {
+      map['first_name'] = Variable<String>(firstName.value);
+    }
+    if (lastName.present) {
+      map['last_name'] = Variable<String>(lastName.value);
+    }
+    if (email.present) {
+      map['email'] = Variable<String>(email.value);
+    }
+    if (login.present) {
+      map['login'] = Variable<String>(login.value);
+    }
     return map;
   }
 
@@ -173,7 +325,11 @@ class UserCompanion extends UpdateCompanion<UserData> {
   String toString() {
     return (StringBuffer('UserCompanion(')
           ..write('id: $id, ')
-          ..write('token: $token')
+          ..write('token: $token, ')
+          ..write('firstName: $firstName, ')
+          ..write('lastName: $lastName, ')
+          ..write('email: $email, ')
+          ..write('login: $login')
           ..write(')'))
         .toString();
   }
@@ -567,10 +723,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$UserTableCreateCompanionBuilder = UserCompanion Function({
   Value<int> id,
   required String token,
+  required String firstName,
+  required String lastName,
+  required String email,
+  required String login,
 });
 typedef $$UserTableUpdateCompanionBuilder = UserCompanion Function({
   Value<int> id,
   Value<String> token,
+  Value<String> firstName,
+  Value<String> lastName,
+  Value<String> email,
+  Value<String> login,
 });
 
 class $$UserTableFilterComposer extends Composer<_$AppDatabase, $UserTable> {
@@ -586,6 +750,18 @@ class $$UserTableFilterComposer extends Composer<_$AppDatabase, $UserTable> {
 
   ColumnFilters<String> get token => $composableBuilder(
       column: $table.token, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get login => $composableBuilder(
+      column: $table.login, builder: (column) => ColumnFilters(column));
 }
 
 class $$UserTableOrderingComposer extends Composer<_$AppDatabase, $UserTable> {
@@ -601,6 +777,18 @@ class $$UserTableOrderingComposer extends Composer<_$AppDatabase, $UserTable> {
 
   ColumnOrderings<String> get token => $composableBuilder(
       column: $table.token, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get firstName => $composableBuilder(
+      column: $table.firstName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get lastName => $composableBuilder(
+      column: $table.lastName, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get email => $composableBuilder(
+      column: $table.email, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get login => $composableBuilder(
+      column: $table.login, builder: (column) => ColumnOrderings(column));
 }
 
 class $$UserTableAnnotationComposer
@@ -617,6 +805,18 @@ class $$UserTableAnnotationComposer
 
   GeneratedColumn<String> get token =>
       $composableBuilder(column: $table.token, builder: (column) => column);
+
+  GeneratedColumn<String> get firstName =>
+      $composableBuilder(column: $table.firstName, builder: (column) => column);
+
+  GeneratedColumn<String> get lastName =>
+      $composableBuilder(column: $table.lastName, builder: (column) => column);
+
+  GeneratedColumn<String> get email =>
+      $composableBuilder(column: $table.email, builder: (column) => column);
+
+  GeneratedColumn<String> get login =>
+      $composableBuilder(column: $table.login, builder: (column) => column);
 }
 
 class $$UserTableTableManager extends RootTableManager<
@@ -644,18 +844,34 @@ class $$UserTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> token = const Value.absent(),
+            Value<String> firstName = const Value.absent(),
+            Value<String> lastName = const Value.absent(),
+            Value<String> email = const Value.absent(),
+            Value<String> login = const Value.absent(),
           }) =>
               UserCompanion(
             id: id,
             token: token,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            login: login,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String token,
+            required String firstName,
+            required String lastName,
+            required String email,
+            required String login,
           }) =>
               UserCompanion.insert(
             id: id,
             token: token,
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            login: login,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

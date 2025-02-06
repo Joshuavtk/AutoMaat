@@ -16,7 +16,6 @@ class _RegisterPageState extends State<RegisterScreen> {
   final TextEditingController _passwordFieldController = TextEditingController();
   final TextEditingController _passwordRepeatFieldController = TextEditingController();
   String statusMessage = '';
-  // bool _obscurePassword = true;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +78,7 @@ class _RegisterPageState extends State<RegisterScreen> {
 
     if (_emailFieldController.text == '' || _passwordFieldController.text == '') {
       setState(() {
-        statusMessage = 'Error logging in, fields may not be empty';
+        statusMessage = 'Error registering, fields may not be empty';
       });
       return null;
     }
