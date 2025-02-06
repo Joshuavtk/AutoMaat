@@ -55,9 +55,6 @@ class MapWidget extends State<Map> {
     setState(() {
       beginLat = _locationData?.latitude ?? beginLat;
       beginLong = _locationData?.longitude ?? beginLong;
-      //cheating:
-      beginLat = 53.238316;
-      beginLong = 6.53497;
       
       currentCenter = LatLng(beginLat, beginLong);
       mapController.move(  
@@ -99,7 +96,7 @@ class MapWidget extends State<Map> {
         children: [
           _getMapLayer(),
           _getCarPointersLayer(),
-          //_getCurrentPositionLayer(),
+          _getCurrentPositionLayer(),
         ]);
   }
 
