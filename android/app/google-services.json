@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988414395801",
+    "project_id": "automaat-e72f0",
+    "storage_bucket": "automaat-e72f0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988414395801:android:4922cf3a4302c46fecff08",
+        "android_client_info": {
+          "package_name": "com.example.auto_maat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDluC_GjcyNBCzAx2PihZ-ACXbE1q70-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

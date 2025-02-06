@@ -1,10 +1,13 @@
 import 'package:auto_maat/ui/account_wrapper.dart';
 import 'package:flutter/material.dart';
 
+import '../database/database.dart';
 import '../modules/user/user_service.dart';
 
 class AccountEditScreen extends StatefulWidget {
-  const AccountEditScreen({super.key});
+  const AccountEditScreen({super.key, required this.userData});
+
+  final UserData userData;
 
   @override
   State<StatefulWidget> createState() => _AccountEditPageState();
@@ -29,20 +32,20 @@ class _AccountEditPageState extends State<AccountEditScreen> {
               margin: const EdgeInsets.all(10),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                child: const Column(
+                child: Column(
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.person,
                           size: 30,
                         ),
                         Text(
-                          'johndoe@gmail.com',
-                          style: TextStyle(fontSize: 15),
+                          widget.userData.email,
+                          style: const TextStyle(fontSize: 15),
                         ),
-                        Text(
+                        const Text(
                           '',
                         )
                       ],

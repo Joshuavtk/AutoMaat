@@ -79,6 +79,7 @@ class _DamageReportState extends State<DamageReportScreen> {
       Row(
         children: [
           ElevatedButton(onPressed: () => openCamera(), child: const Text('Take new picture')),
+          const Spacer(),
           ElevatedButton(onPressed: () => openGallery(), child: const Text('Upload existing picture')),
         ],
       ),

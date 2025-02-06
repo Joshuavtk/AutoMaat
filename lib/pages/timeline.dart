@@ -50,7 +50,7 @@ class _TimelinePageState extends State<TimelineScreen> {
                 "State: ${rental.state.value}",
               ),
               Text("Code: ${rental.code.value}"),
-              ElevatedButton(onPressed: () => goToDamageReportScreen(rental), child: const Text('Report damage'))
+              OutlinedButton(onPressed: () => goToDamageReportScreen(rental), child: const Text('Report damage'))
             ],
           ),
         ),

@@ -29,10 +29,23 @@ Future<bool> authenticate(username, password, rememberMe) async {
       print('Login geslaagd...: ${response.statusCode}');
       String bearerToken = jsonDecode(response.body)['id_token'];
 
+
+      final accountDataResponse = await http.get(
+        Uri.http(apiUrl, 'api/account'),
+        headers: {"Content-Type": "application/json", "Authorization": 'Bearer $bearerToken'},
+      );
+
+      var accountData = jsonDecode(accountDataResponse.body);
+      String firstName = accountData['firstName'];
+      String lastName = accountData['lastName'];
+      String email = accountData['email'];
+      String login = accountData['login'];
+
       AppDatabase database = AppDatabase();
       // var users = await database.getUsers();
       // print(users);
-      await database.saveItem(bearerToken);
+      // await database.saveItem(bearerToken);
+      await database.saveUser(token: bearerToken, firstName: firstName, lastName: lastName, email: email, login: login);
 
       database.close();
 
@@ -100,7 +113,7 @@ Future<bool> register(email, firstName, lastName, username, password) async {
 
   try {
     final response = await http.post(
-      Uri.http(apiUrl, 'api/register'),
+      Uri.http(apiUrl, 'api/AM/register'),
       headers: {"Content-Type": "application/json"},
       body: payload,
     );
@@ -171,6 +184,20 @@ Future<String> getUserToken() async {
   String token = userData.token;
 
   return token;
+}
+
+Future<UserData> getUserData() async {
+  AppDatabase database = AppDatabase();
+  var users = await database.getUsers();
+  database.close();
+
+  UserData userData = users.first;
+
+  return userData;
+}
+
+UserData fakeUser() {
+  return const UserData(id: 1, token: '', firstName: '', lastName: '', email: '', login: '');
 }
 
 Future<bool> changePassword(currentPassword, newPassword) async {

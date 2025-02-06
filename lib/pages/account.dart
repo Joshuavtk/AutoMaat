@@ -5,7 +5,9 @@ import 'package:auto_maat/ui/account_wrapper.dart';
 import 'package:flutter/material.dart';
 
 import '../database/database.dart';
+import '../modules/user/user_service.dart';
 import '../ui/full_width_button.dart';
+import 'info.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -15,6 +17,14 @@ class AccountScreen extends StatefulWidget {
 }
 
 class _AccountPageState extends State<AccountScreen> {
+  UserData userData = fakeUser();
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return accountWrapper(context, 'Account', children: <Widget>[
@@ -31,9 +41,9 @@ class _AccountPageState extends State<AccountScreen> {
                     Icons.person,
                     size: 30,
                   ),
-                  const Text(
-                    'johndoe@gmail.com',
-                    style: TextStyle(fontSize: 15),
+                  Text(
+                    userData.email,
+                    style: const TextStyle(fontSize: 15),
                   ),
                   IconButton(
                       onPressed: () => print('Expand account dropdown.'),
@@ -53,7 +63,13 @@ class _AccountPageState extends State<AccountScreen> {
         height: 20,
       ),
       fullWidthButton(context, 'Timeline', Icons.history, const TimelineScreen()),
-      fullWidthButton(context, 'Edit account', Icons.manage_accounts_outlined, const AccountEditScreen()),
+      fullWidthButton(
+          context,
+          'Edit account',
+          Icons.manage_accounts_outlined,
+          AccountEditScreen(
+            userData: userData,
+          )),
       MaterialButton(
           height: 50,
           minWidth: 1000,
@@ -68,8 +84,9 @@ class _AccountPageState extends State<AccountScreen> {
               )
             ],
           )),
+      fullWidthButton(context, 'App settings', Icons.settings_outlined, const TimelineScreen()),
       fullWidthButton(context, 'Support', Icons.help_outline, const TimelineScreen()),
-      fullWidthButton(context, 'App info', Icons.info_outline, const TimelineScreen()),
+      fullWidthButton(context, 'App info', Icons.info_outline, const AppInfoScreen()),
     ]);
   }
 
@@ -81,5 +98,12 @@ class _AccountPageState extends State<AccountScreen> {
     if (mounted) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
     }
+  }
+
+  _getUserData() async {
+    var temp = await getUserData();
+    setState(() {
+      userData = temp;
+    });
   }
 }
